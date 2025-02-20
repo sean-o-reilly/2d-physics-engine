@@ -6,14 +6,15 @@ Rectangle obstacle;
 
 /*TODO:
  *
+ *  Condense main
  *
+ *  Collisions!!!
  *  Add objects, then fix up circle to check collision not for ends of screen but for objects
+ *
  *  Out of bounds stuff?
+ *
  *  An array of objects that we can check for each time collision is called? or is that
  *  really suboptimal
- *
- *  FIX FREAKING COLLISION
- *
  *
  */
 
@@ -28,7 +29,6 @@ void showPosition(Circle circle);
 void showVelocity(Circle circle);
 void showCollision(Circle circle);
 void showTime();
-
 
 int main()
 {
