@@ -64,3 +64,5 @@
 8	6774	7617827908652186	_deps/raylib-build/raylib/CMakeFiles/raylib.dir/raudio.c.obj	fbc299ac91443ccb
 6774	6907	7617827976317264	_deps/raylib-build/raylib/libraylib.a	2530f413f1c00d62
 6907	7279	7617827977645527	rayLibTesting.exe	f72135970364905e
+16	802	7617881631542033	CMakeFiles/rayLibTesting.dir/main.cpp.obj	39a6888bb7001fcc
+804	1233	7617881639410951	rayLibTesting.exe	f72135970364905e
