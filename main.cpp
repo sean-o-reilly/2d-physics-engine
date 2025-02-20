@@ -67,6 +67,7 @@ int main()
             circle.setColor(BLUE);
         }
 
+        //user control
         circle.Update();
 
 
@@ -82,10 +83,10 @@ int main()
 
         ClearBackground(RAYWHITE);
 
-        //showPosition(circle);
-        //showVelocity(circle);
-        //showCollision(circle);
-        //showTime();
+        showPosition(circle);
+        showVelocity(circle);
+        showCollision(circle);
+        showTime();
 
         // circle.DrawHitbox();
 
