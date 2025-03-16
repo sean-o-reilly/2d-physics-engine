@@ -56,7 +56,7 @@ char Circle::checkCollisionX() {
     char currentDirection = ' ';
     (xVelocity > 0.0f) ? currentDirection = 'R' : currentDirection = 'L';
 
-    if (!checkCollisionFloor()) {  //wall jump
+    if (!checkCollisionFloor(GetScreenHeight())) {  //wall jump
 
         if (IsKeyDown(' ')
             && (xPos <= 0.0f + radius || xPos >= GetScreenWidth() - radius)
@@ -100,15 +100,15 @@ char Circle::checkCollisionX() {
     return '?'; //freeze if there is an error
 }
 
-bool Circle::checkCollisionFloor() {
+bool Circle::checkCollisionFloor(const int floor) {
 
-    if (yPos < GetScreenHeight() - radius) {
+    if (yPos < floor - radius) {
 
         return false;
     }
     else {  //collision
-        if (yPos > GetScreenHeight() - radius) {
-            yPos = GetScreenHeight() - radius;
+        if (yPos > floor - radius) {
+            yPos = floor - radius;
         }
 
         if (abs(yVelocity)  > 0.0f) {yVelocity = 0.0f;}
@@ -218,13 +218,13 @@ void Circle::WallJump() {
 void Circle::MoveUpDown() {
     checkCollisionCeiling();
 
-    if (IsKeyDown(' ') && checkCollisionFloor()) {Jump();}
+    if (IsKeyDown(' ') && checkCollisionFloor(GetScreenHeight())) {Jump();}
 
     else if (IsKeyDown(' ') &&
-        !doubleJumping && !checkCollisionFloor() &&
+        !doubleJumping && !checkCollisionFloor(GetScreenHeight()) &&
         (checkCollisionX() == 'R' || checkCollisionX() == 'L')) {}
 
-    else if (!checkCollisionFloor()) {Freefall();}
+    else if (!checkCollisionFloor(GetScreenHeight())) {Freefall();}
 }
 
 void Circle::Draw() {

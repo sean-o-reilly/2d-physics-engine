@@ -42,7 +42,7 @@ public:
     ~Circle();
 
     char checkCollisionX();
-    bool checkCollisionFloor();
+    bool checkCollisionFloor(int floor);
     bool checkCollisionCeiling();
 
     void CauseFriction();

@@ -8,13 +8,10 @@ Rectangle obstacle;
  *
  *  Condense main
  *
- *  Collisions!!!
- *  Add objects, then fix up circle to check collision not for ends of screen but for objects
+ *  Collisions-
  *
- *  Out of bounds stuff?
- *
- *  An array of objects that we can check for each time collision is called? or is that
- *  really suboptimal
+ *      need to create an object/obstacle base class, to derive other classes from that base class
+ *      make a vector/array of those objects that can be iterated through every frame to check for collisions
  *
  */
 
@@ -60,7 +57,7 @@ int main()
 
 
         if (CheckCollisionRecs(platform, circle.getHitbox())) {
-            // circle.setColor(PURPLE);
+            circle.setColor(PURPLE);
 
         }
         else {
@@ -69,6 +66,8 @@ int main()
 
         //user control
         circle.Update();
+
+
 
 
         PollInputEvents();  //end of inputs for this frame
@@ -124,7 +123,7 @@ void showVelocity(Circle circle) {
 };
 void showCollision(Circle circle) {
     const char* xCollisionStr = std::to_string(circle.checkCollisionX()).c_str();
-    const char* floorCollisionStr = circle.checkCollisionFloor() ? "true" : "false";
+    const char* floorCollisionStr = circle.checkCollisionFloor(GetScreenHeight()) ? "true" : "false";
     const char* ceilingCollisionStr = circle.checkCollisionCeiling() ? "true" : "false";
 
     DrawText("X Collision: ", 0, 120, 20, BLACK);
