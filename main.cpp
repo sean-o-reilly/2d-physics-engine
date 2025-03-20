@@ -12,6 +12,7 @@ Rectangle obstacle;
  *
  *      need to create an object/obstacle base class, to derive other classes from that base class
  *      make a vector/array of those objects that can be iterated through every frame to check for collisions
+ *      should probably implement matricies to condense object positions
  *
  */
 
@@ -46,6 +47,9 @@ int main()
     Circle circle(50, BLUE);
     Rectangle platform = Rectangle{screenWidth * .2, screenHeight / 2, screenWidth * .6, 50};
 
+    int objCount = 1;
+    Rectangle obstacles[10];
+    obstacles[0] = platform;
 
 
     // Main game loop
@@ -55,19 +59,17 @@ int main()
         //----------------------------------------------------------------------------------
 
 
-
-        if (CheckCollisionRecs(platform, circle.getHitbox())) {
-            circle.setColor(PURPLE);
-
-        }
-        else {
-            circle.setColor(BLUE);
-        }
+        //checking for collision between theh platform and circle hitbox
+        // if (CheckCollisionRecs(platform, circle.getHitbox())) {
+        //     circle.setColor(PURPLE);
+        //
+        // }
+        // else {
+        //     circle.setColor(BLUE);
+        // }
 
         //user control
-        circle.Update();
-
-
+        circle.Update(obstacles, objCount);
 
 
         PollInputEvents();  //end of inputs for this frame

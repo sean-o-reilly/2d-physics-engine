@@ -59,11 +59,14 @@ public:
     void Draw();
 
     void UpdateHitbox();
-
-    void Update();
-
-
     void DrawHitbox();
+
+    void EnvCollision(Rectangle objArray[], int objs);
+
+    void Update(Rectangle objArray[], int objs);
+
+
+
 
     float getRadius();
     Color getColor();

@@ -235,16 +235,31 @@ void Circle::UpdateHitbox() {
     hitbox = Rectangle{xPos - radius, yPos - radius, radius * 2, radius * 2};
 }
 
-
-void Circle::Update() {
-    MoveLeftRight();
-    MoveUpDown();
-    UpdateHitbox();
-}
-
 void Circle::DrawHitbox() {
     DrawRectangleLinesEx(hitbox, 3, RED);
 }
+
+void Circle::EnvCollision(Rectangle objArray[], int objs) {
+
+    for (int i = 0; i < objs; i++) {
+        if (CheckCollisionRecs(objArray[i], hitbox)) {
+            DrawHitbox();
+        }
+    }
+
+    return;
+}
+
+void Circle::Update(Rectangle objArray[], int objs) {
+    MoveLeftRight();
+    MoveUpDown();
+    UpdateHitbox();
+    EnvCollision(objArray, objs);
+}
+
+
+
+
 
 //getter and setters
 
