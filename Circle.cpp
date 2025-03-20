@@ -244,6 +244,8 @@ void Circle::EnvCollision(Rectangle objArray[], int objs) {
     for (int i = 0; i < objs; i++) {
         if (CheckCollisionRecs(objArray[i], hitbox)) {
             DrawHitbox();
+
+            //collision is happening, but from what direction, and how to process it?
         }
     }
 
