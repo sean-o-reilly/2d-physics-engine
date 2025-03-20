@@ -71,6 +71,8 @@ int main()
         //user control
         circle.Update(obstacles, objCount);
 
+        //hello commit
+
 
         PollInputEvents();  //end of inputs for this frame
 
