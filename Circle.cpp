@@ -276,11 +276,9 @@ void Circle::EnvCollision(Rectangle objArray[], int objs) {
                 this->envCeiling = objArray[i].y + objArray[i].height;
             }
             if (this->xPos <= objArray[i].x) { //collision to right of circle
-                // DrawHitbox();
                 this->envRight = objArray[i].x + 1;
             }
             if (this->xPos > objArray[i].x + objArray[i].width) { //collision to left of the circle
-                // DrawHitbox();
                 this->envLeft = objArray[i].x + objArray[i].width - 1;
             }
 
