@@ -33,6 +33,13 @@ private:
     bool doubleJumping;
     char lastWallJumpDirection;
 
+    bool touchingFloor;
+
+    float envFloor;
+    float envCeiling;
+    float envLeft;
+    float envRight;
+
     Rectangle hitbox;
 
 public:
@@ -42,7 +49,7 @@ public:
     ~Circle();
 
     char checkCollisionX();
-    bool checkCollisionFloor(int floor);
+    bool checkCollisionFloor();
     bool checkCollisionCeiling();
 
     void CauseFriction();
@@ -80,7 +87,10 @@ public:
     void setXVelocity(float newXVelocity);
     void setYVelocity(float newYVelocity);
     Rectangle getHitbox();
-
+    float getEnvFloor();
+    float getEnvCeiling();
+    float getEnvLeft();
+    float getEnvRight();
 };
 
 

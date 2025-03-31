@@ -26,6 +26,14 @@ Circle::Circle() {
     jumpVelocity = 30.0f;
     doubleJumping = false;
     lastWallJumpDirection = ' ';
+
+    envFloor = GetScreenHeight();
+    envCeiling = 0;
+    envLeft = 0.0;
+    envRight = GetScreenWidth();
+
+    //thinking about making the circle class better by implementing boolean locks for collision
+    //like in Update() -> if touchingFLoor, dont allow y movement downwards, else, freefall
 }
 
 Circle::Circle(float newRadius, Color newColor) {
@@ -46,6 +54,11 @@ Circle::Circle(float newRadius, Color newColor) {
     doubleJumping = false;
     lastWallJumpDirection = ' ';
     hitbox = Rectangle{xPos, yPos, radius, radius};
+
+    envFloor = GetScreenHeight();
+    envCeiling = 0;
+    envLeft = 0.0;
+    envRight = GetScreenWidth();
 }
 
 Circle::~Circle() = default;    //default destructor
@@ -56,12 +69,12 @@ char Circle::checkCollisionX() {
     char currentDirection = ' ';
     (xVelocity > 0.0f) ? currentDirection = 'R' : currentDirection = 'L';
 
-    if (!checkCollisionFloor(GetScreenHeight())) {  //wall jump
+    if (!checkCollisionFloor()) {  //wall jump
 
         if (IsKeyDown(' ')
-            && (xPos <= 0.0f + radius || xPos >= GetScreenWidth() - radius)
-            && (abs(xVelocity) >= maxSpeed * 0.8)
-            && currentDirection != lastWallJumpDirection
+            && (xPos <= envLeft + radius || xPos >= envRight - radius)
+            && (abs(xVelocity) >= maxSpeed * 0.8) //must be going at least 80 percent of max speed to wall jump
+            && currentDirection != lastWallJumpDirection //cannot wall jump twice in same direction
             ) {
 
             WallJump();
@@ -78,20 +91,20 @@ char Circle::checkCollisionX() {
         lastWallJumpDirection = ' ';
     }
 
-    if (xPos > 0.0f + radius && xPos < GetScreenWidth() - radius) {
+    if (xPos > envLeft + radius && xPos < envRight - radius) {
         return ' '; //no collion
     }
-    else if (xPos <= 0.0f + radius) {    //collision left
+    else if (xPos <= envLeft + radius) {    //collision left
 
-        xPos = 0.0f + radius;
+        xPos = envLeft + radius;
 
         xVelocity = 0.0f;
 
         return 'L';
     }
-    else if (xPos >= GetScreenWidth() - radius) { //right
+    else if (xPos >= envRight - radius) { //right
 
-        xPos = GetScreenWidth() - radius;
+        xPos = envRight - radius;
 
         xVelocity = 0.0f;
         return 'R';
@@ -100,15 +113,15 @@ char Circle::checkCollisionX() {
     return '?'; //freeze if there is an error
 }
 
-bool Circle::checkCollisionFloor(const int floor) {
+bool Circle::checkCollisionFloor() {
 
-    if (yPos < floor - radius) {
+    if (yPos < envFloor - radius) {
 
         return false;
     }
     else {  //collision
-        if (yPos > floor - radius) {
-            yPos = floor - radius;
+        if (yPos > envFloor - radius) {
+            yPos = envFloor - radius;
         }
 
         if (abs(yVelocity)  > 0.0f) {yVelocity = 0.0f;}
@@ -120,12 +133,12 @@ bool Circle::checkCollisionFloor(const int floor) {
 }
 
 bool Circle::checkCollisionCeiling() {
-    if (yPos > 0 + radius) {
+    if (yPos > envCeiling + radius) {
         return false;
     }
     else {  //colliding with ceiling
         yVelocity = 0.0f;
-        if (yPos < 0 + radius) {yPos = 0 + radius;}
+        if (yPos < envCeiling + radius) {yPos = envCeiling + radius;}
     }
     return true;
 }
@@ -197,7 +210,7 @@ void Circle::MoveLeftRight() {
 }
 
 void Circle::Freefall() {
-    yVelocity += gravity;
+    yVelocity += gravity; //acceleration due to gravity
     yPos -= yVelocity;
 }
 
@@ -218,13 +231,13 @@ void Circle::WallJump() {
 void Circle::MoveUpDown() {
     checkCollisionCeiling();
 
-    if (IsKeyDown(' ') && checkCollisionFloor(GetScreenHeight())) {Jump();}
+    if (IsKeyDown(' ') && checkCollisionFloor()) {Jump();}
 
     else if (IsKeyDown(' ') &&
-        !doubleJumping && !checkCollisionFloor(GetScreenHeight()) &&
+        !doubleJumping && !checkCollisionFloor() &&
         (checkCollisionX() == 'R' || checkCollisionX() == 'L')) {}
 
-    else if (!checkCollisionFloor(GetScreenHeight())) {Freefall();}
+    else if (!checkCollisionFloor()) {Freefall();}
 }
 
 void Circle::Draw() {
@@ -241,15 +254,38 @@ void Circle::DrawHitbox() {
 
 void Circle::EnvCollision(Rectangle objArray[], int objs) {
 
-    for (int i = 0; i < objs; i++) {
-        if (CheckCollisionRecs(objArray[i], hitbox)) {
-            DrawHitbox();
+    // moved the else case up here to make sure we set to default, THEN check if collision is still happening
+    // fixed collision not working with multiple objects
 
-            //collision is happening, but from what direction, and how to process it?
+    //default bounds are screen width and height
+    envFloor = GetScreenHeight();
+    envCeiling = 0;
+    envLeft = 0;
+    envRight = GetScreenWidth();
+
+    bool collided = false;
+
+    for (int i = 0; i < objs; ++i) {
+        if (CheckCollisionRecs(objArray[i], hitbox)) {
+            collided = true;
+
+            if (this->yPos < objArray[i].y) { // standing on platform
+                this->envFloor = objArray[i].y + 1;
+            }
+            if (this->yPos > objArray[i].y + objArray[i].height) { // hitting ceiling
+                this->envCeiling = objArray[i].y + objArray[i].height;
+            }
+            if (this->xPos <= objArray[i].x) { //collision to right of circle
+                // DrawHitbox();
+                this->envRight = objArray[i].x + 1;
+            }
+            if (this->xPos > objArray[i].x + objArray[i].width) { //collision to left of the circle
+                // DrawHitbox();
+                this->envLeft = objArray[i].x + objArray[i].width - 1;
+            }
+
         }
     }
-
-    return;
 }
 
 void Circle::Update(Rectangle objArray[], int objs) {
@@ -257,12 +293,9 @@ void Circle::Update(Rectangle objArray[], int objs) {
     MoveUpDown();
     UpdateHitbox();
     EnvCollision(objArray, objs);
+
+    // envFloor = GetScreenHeight();
 }
-
-
-
-
-
 //getter and setters
 
 float Circle::getRadius() {
@@ -299,6 +332,22 @@ float Circle::getXVelocity() {
 
 float Circle::getYVelocity() {
     return yVelocity;
+}
+
+float Circle::getEnvFloor() {
+    return envFloor;
+}
+
+float Circle::getEnvCeiling() {
+    return envCeiling;
+}
+
+float Circle::getEnvLeft() {
+    return envLeft;
+}
+
+float Circle::getEnvRight() {
+    return envRight;
 }
 
 void Circle::setXVelocity(float newXVelocity) {

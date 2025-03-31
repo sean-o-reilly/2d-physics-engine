@@ -27,14 +27,23 @@ void showPosition(Circle circle);
 void showVelocity(Circle circle);
 void showCollision(Circle circle);
 void showTime();
+void showEnvFloor(Circle circle);
+void showEnvCeiling(Circle circle);
+void showEnvLeft(Circle circle);
+void showEnvRight(Circle circle);
+
+struct Obstacle {
+    Rectangle rec;
+    Color color;
+};
 
 int main()
 {
     // Initialization
     //--------------------------------------------------------------------------------------
 
-    const int screenWidth = 1280; //1280x720 for 720p
-    const int screenHeight = 720; //1920x1200 for fullscreen 16:10
+    const int screenWidth = 1920; //1280x720 for 720p
+    const int screenHeight = 1200; //1920x1200 for fullscreen 16:10
 
     InitWindow(screenWidth, screenHeight, "Jumping Circle");
     EnableCursor();
@@ -45,12 +54,19 @@ int main()
 
 
     Circle circle(50, BLUE);
-    Rectangle platform = Rectangle{screenWidth * .2, screenHeight / 2, screenWidth * .6, 50};
+    Rectangle platform = Rectangle{screenWidth * .2, screenHeight / 1.5, screenWidth * .45, 50};
+    Rectangle floor = Rectangle{0, screenHeight - 50, screenWidth, 50};
+    Rectangle wall = Rectangle{1920 - 450, 750, 100, 400};
 
-    int objCount = 1;
+    //make obstacles struct with Rectangle and color pair
+    // ^^
+
     Rectangle obstacles[10];
     obstacles[0] = platform;
+    obstacles[1] = floor;
+    obstacles[2] = wall;
 
+    int objCount = 3;
 
     // Main game loop
     while (!WindowShouldClose())    // Detect window close button or ESC key
@@ -58,26 +74,12 @@ int main()
         // Update
         //----------------------------------------------------------------------------------
 
-
-        //checking for collision between theh platform and circle hitbox
-        // if (CheckCollisionRecs(platform, circle.getHitbox())) {
-        //     circle.setColor(PURPLE);
-        //
-        // }
-        // else {
-        //     circle.setColor(BLUE);
-        // }
-
-        //user control
+        //user control + object interaction
         circle.Update(obstacles, objCount);
-
-        //hello commit
-
 
         PollInputEvents();  //end of inputs for this frame
 
         //----------------------------------------------------------------------------------
-
         // Draw
         //----------------------------------------------------------------------------------
         BeginDrawing();
@@ -86,14 +88,22 @@ int main()
 
         ClearBackground(RAYWHITE);
 
+        //utilities
         showPosition(circle);
         showVelocity(circle);
         showCollision(circle);
         showTime();
+        showEnvFloor(circle);
+        showEnvCeiling(circle);
+        showEnvLeft(circle);
+        showEnvRight(circle);
 
-        // circle.DrawHitbox();
-
-        DrawRectangleRec(platform, BLACK);
+        // for (int i = 0; i < objCount; i++) {
+        //     DrawRectangleRec(obstacles[i], BLACK);
+        // }
+        DrawRectangleRec(obstacles[0], BLACK);
+        DrawRectangleRec(obstacles[1], GRAY);
+        DrawRectangleRec(obstacles[2], GREEN);
 
         circle.Draw();
 
@@ -127,7 +137,7 @@ void showVelocity(Circle circle) {
 };
 void showCollision(Circle circle) {
     const char* xCollisionStr = std::to_string(circle.checkCollisionX()).c_str();
-    const char* floorCollisionStr = circle.checkCollisionFloor(GetScreenHeight()) ? "true" : "false";
+    const char* floorCollisionStr = circle.checkCollisionFloor() ? "true" : "false";
     const char* ceilingCollisionStr = circle.checkCollisionCeiling() ? "true" : "false";
 
     DrawText("X Collision: ", 0, 120, 20, BLACK);
@@ -144,4 +154,44 @@ void showTime() {
 
     DrawText("Time: ", 0, 200, 20, BLACK);
     DrawText(timeStr, 65, 200, 20, BLACK);
+}
+
+void showEnvFloor (Circle circle) {
+    const char* envFlStr = std::to_string(circle.getEnvFloor()).c_str();
+
+
+    DrawText("Circle Env Floor: ", 0, 240, 20, BLACK);
+    DrawText(envFlStr, 190, 240, 20, BLACK);
+    if (circle.getEnvFloor() == GetScreenHeight()) {
+        const char* envIsScreenHeight = "(Screen Height)";
+        DrawText(envIsScreenHeight, 310, 240, 20, BLACK);
+    }
+}
+
+void showEnvCeiling (Circle circle) {
+    const char* envClStr = std::to_string(circle.getEnvCeiling()).c_str();
+
+
+    DrawText("Circle Env Ceiling: ", 0, 260, 20, BLACK);
+    DrawText(envClStr, 190, 260, 20, BLACK);
+    if (circle.getEnvFloor() == 0) {
+        const char* envIsScreenHeight = "(Screen Height)";
+        DrawText(envIsScreenHeight, 310, 260, 20, BLACK);
+    }
+}
+
+void showEnvLeft (Circle circle) {
+    const char* envClStr = std::to_string(circle.getEnvLeft()).c_str();
+
+
+    DrawText("Circle Env Left: ", 0, 280, 20, BLACK);
+    DrawText(envClStr, 190, 280, 20, BLACK);
+}
+
+void showEnvRight (Circle circle) {
+    const char* envClStr = std::to_string(circle.getEnvRight()).c_str();
+
+
+    DrawText("Circle Env Right: ", 0, 300, 20, BLACK);
+    DrawText(envClStr, 190, 300, 20, BLACK);
 }
