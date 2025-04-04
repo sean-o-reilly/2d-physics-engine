@@ -26,12 +26,15 @@ Rectangle obstacle;
 void showPosition(Entity circle);
 void showVelocity(Entity circle);
 void showCollision(Entity circle);
-void showTime();
 void showEnvFloor(Entity circle);
 void showEnvCeiling(Entity circle);
 void showEnvLeft(Entity circle);
 void showEnvRight(Entity circle);
-void showFPS();
+
+void showTime(int x, int y, int fontSize, Color color);
+void showFPS(int x, int y, int fontSize, Color color);
+
+void showDebug(int x, int y, int fontSize, Color color);
 
 struct Obstacle {
     Rectangle rec;
@@ -72,6 +75,8 @@ int main()
 
     int objCount = 4;
 
+    bool showDebugMenu = false;
+
     // Main game loop
     while (!WindowShouldClose())    // Detect window close button or ESC key
     {
@@ -80,7 +85,9 @@ int main()
 
         //user control + object interaction
         circle.Update(obstacles, objCount);
-        // circle.DrawHitbox();
+
+        //toggle debuging menu
+        if (GetKeyPressed() == 'P') showDebugMenu = !showDebugMenu;
 
         PollInputEvents();  //end of inputs for this frame
 
@@ -94,19 +101,16 @@ int main()
         ClearBackground(RAYWHITE);
 
         //utilities
-        showPosition(circle);
-        showVelocity(circle);
-        showCollision(circle);
-        showTime();
-        showEnvFloor(circle);
-        showEnvCeiling(circle);
-        showEnvLeft(circle);
-        showEnvRight(circle);
-        showFPS();
+        // showPosition(circle);
+        // showVelocity(circle);
+        // showCollision(circle);
+        // showEnvFloor(circle);
+        // showEnvCeiling(circle);
+        // showEnvLeft(circle);
+        // showEnvRight(circle);
 
-        // for (int i = 0; i < objCount; i++) {
-        //     DrawRectangleRec(obstacles[i], BLACK);
-        // }
+        if (showDebugMenu) showDebug(10, 10, 30, BLACK);
+
         DrawRectangleRec(obstacles[0], BLACK);
         DrawRectangleRec(obstacles[1], GRAY);
         DrawRectangleRec(obstacles[2], GREEN);
@@ -155,13 +159,7 @@ void showCollision(Entity circle) {
     DrawText(floorCollisionStr, 165, 140, 20, BLACK);
     DrawText(ceilingCollisionStr, 165, 160, 20, BLACK);
 };
-void showTime() {
-    const char* timeStr = std::to_string(GetTime()).c_str();
 
-
-    DrawText("Time: ", 0, 200, 20, BLACK);
-    DrawText(timeStr, 65, 200, 20, BLACK);
-}
 
 void showEnvFloor (Entity circle) {
     const char* envFlStr = std::to_string(circle.getEnvFloor()).c_str();
@@ -203,9 +201,35 @@ void showEnvRight (Entity circle) {
     DrawText(envClStr, 190, 300, 20, BLACK);
 }
 
-void showFPS() {
-    const char* fpsStr = std::to_string(GetFPS()).c_str();
+void showTime(int x, int y, int fontSize, Color color) {
+    const char* timeStr = std::to_string(GetTime()).c_str();
 
-    DrawText("FPS: ", 0, 320, 20, BLACK);
-    DrawText(fpsStr, 190, 320, 20, BLACK);
+
+    DrawText("Time: ", x, y, fontSize, color);
+    DrawText(timeStr, x+ (fontSize * 3), y, fontSize, color);
 }
+
+void showFPS(int x, int y, int fontSize, Color color) {
+    int fps = GetFPS();
+    const char* fpsStr = std::to_string(fps).c_str();
+    Color fpsColor;
+    if (fps >= 60) fpsColor = GREEN;
+    else if (fps >= 35) fpsColor = YELLOW;
+    else fpsColor = RED;
+
+    DrawText("FPS: ", x, y, fontSize, color);
+    DrawText(fpsStr, x + (3 * fontSize), y, fontSize, fpsColor);
+}
+
+void showDebug(int x, int y, int fontSize, Color color) {
+    int lines = 2;
+
+    showTime(x, y, fontSize, color);
+    showFPS(x, y + fontSize, fontSize, color);
+
+    Rectangle border = Rectangle{x - (fontSize / 4), y - (fontSize / 4),
+        fontSize * 10, (lines * fontSize) + (fontSize / 2)};
+
+    DrawRectangleLinesEx(border, 3, color);
+}
+
