@@ -12,7 +12,7 @@
 
 
 
-class Circle {
+class Entity {
 
 private:
     float radius;
@@ -44,9 +44,9 @@ private:
 
 public:
 
-    Circle();
-    Circle(float newRadius, Color newColor);
-    ~Circle();
+    Entity();
+    Entity(float newRadius, Color newColor);
+    ~Entity();
 
     char checkCollisionX();
     bool checkCollisionFloor();

@@ -2,13 +2,13 @@
 // Created by oreil on 1/5/2025.
 //
 
-#include "Circle.h"
+#include "Entity.h"
 #include <string>
 #include <stdlib.h>
 #include <valarray>
 
 
-Circle::Circle() {
+Entity::Entity() {
 
     radius = 60.0f;
     color = BLUE;
@@ -36,7 +36,7 @@ Circle::Circle() {
     //like in Update() -> if touchingFLoor, dont allow y movement downwards, else, freefall
 }
 
-Circle::Circle(float newRadius, Color newColor) {
+Entity::Entity(float newRadius, Color newColor) {
     radius = newRadius;
     color = newColor;
 
@@ -61,10 +61,10 @@ Circle::Circle(float newRadius, Color newColor) {
     envRight = GetScreenWidth();
 }
 
-Circle::~Circle() = default;    //default destructor
+Entity::~Entity() = default;    //default destructor
 
 
-char Circle::checkCollisionX() {
+char Entity::checkCollisionX() {
 
     char currentDirection = ' ';
     (xVelocity > 0.0f) ? currentDirection = 'R' : currentDirection = 'L';
@@ -113,7 +113,7 @@ char Circle::checkCollisionX() {
     return '?'; //freeze if there is an error
 }
 
-bool Circle::checkCollisionFloor() {
+bool Entity::checkCollisionFloor() {
 
     if (yPos < envFloor - radius) {
 
@@ -132,7 +132,7 @@ bool Circle::checkCollisionFloor() {
     return true; //freeze if there is an error
 }
 
-bool Circle::checkCollisionCeiling() {
+bool Entity::checkCollisionCeiling() {
     if (yPos > envCeiling + radius) {
         return false;
     }
@@ -143,7 +143,7 @@ bool Circle::checkCollisionCeiling() {
     return true;
 }
 
-void Circle::CauseFriction() {  //make xVelocity reduce to zero
+void Entity::CauseFriction() {  //make xVelocity reduce to zero
     if (xVelocity > 0.0f) {
         xVelocity -= friction;
     }
@@ -152,7 +152,7 @@ void Circle::CauseFriction() {  //make xVelocity reduce to zero
     }
 }
 
-void Circle::MoveLeft() {
+void Entity::MoveLeft() {
     if (checkCollisionX() != 'L') { //can move left
         if (IsKeyDown('A') && abs(xVelocity) < maxSpeed) {
             xVelocity -= movementSpeed; //give a negative x velocity if A is pressed
@@ -171,7 +171,7 @@ void Circle::MoveLeft() {
     }
 }
 
-void Circle::MoveRight() {
+void Entity::MoveRight() {
     if (checkCollisionX() != 'R') { //can move right
         if (IsKeyDown('D') && abs(xVelocity) < maxSpeed) {
             xVelocity += movementSpeed;
@@ -190,14 +190,14 @@ void Circle::MoveRight() {
     }
 }
 
-void Circle::Brake() {
+void Entity::Brake() {
     checkCollisionX();
     xPos += xVelocity;
     if (xVelocity < 1.0f && xVelocity > -1.0f) {xVelocity = 0.0f;}
     CauseFriction();
 }
 
-void Circle::MoveLeftRight() {
+void Entity::MoveLeftRight() {
     if (IsKeyDown('A') && IsKeyDown('D')) {
         if (abs(xVelocity) > 0.0f) {    //keep moving, but slow
             Brake();
@@ -209,17 +209,17 @@ void Circle::MoveLeftRight() {
     }
 }
 
-void Circle::Freefall() {
+void Entity::Freefall() {
     yVelocity += gravity; //acceleration due to gravity
     yPos -= yVelocity;
 }
 
-void Circle::Jump() {
+void Entity::Jump() {
     yVelocity += jumpVelocity;
     Freefall();
 }
 
-void Circle::WallJump() {
+void Entity::WallJump() {
 
     (xVelocity > 0.0f) ? lastWallJumpDirection = 'R' : lastWallJumpDirection = 'L';
 
@@ -228,7 +228,7 @@ void Circle::WallJump() {
 
 }
 
-void Circle::MoveUpDown() {
+void Entity::MoveUpDown() {
     checkCollisionCeiling();
 
     if (IsKeyDown(' ') && checkCollisionFloor()) {Jump();}
@@ -240,19 +240,19 @@ void Circle::MoveUpDown() {
     else if (!checkCollisionFloor()) {Freefall();}
 }
 
-void Circle::Draw() {
+void Entity::Draw() {
     DrawCircle(xPos, yPos, radius, color);
 }
 
-void Circle::UpdateHitbox() {
+void Entity::UpdateHitbox() {
     hitbox = Rectangle{xPos - radius, yPos - radius, radius * 2, radius * 2};
 }
 
-void Circle::DrawHitbox() {
+void Entity::DrawHitbox() {
     DrawRectangleLinesEx(hitbox, 3, RED);
 }
 
-void Circle::EnvCollision(Rectangle objArray[], int objs) {
+void Entity::EnvCollision(Rectangle objArray[], int objs) {
 
     // moved the else case up here to make sure we set to default, THEN check if collision is still happening
     // fixed collision not working with multiple objects
@@ -304,7 +304,7 @@ void Circle::EnvCollision(Rectangle objArray[], int objs) {
     }
 }
 
-bool Circle::DoubleCollision() {
+bool Entity::DoubleCollision() {
     if (checkCollisionFloor() && checkCollisionX()) {
         //
 
@@ -312,7 +312,7 @@ bool Circle::DoubleCollision() {
     return false;
 }
 
-void Circle::Update(Rectangle objArray[], int objs) {
+void Entity::Update(Rectangle objArray[], int objs) {
     MoveLeftRight();
     MoveUpDown();
     UpdateHitbox();
@@ -320,67 +320,67 @@ void Circle::Update(Rectangle objArray[], int objs) {
 }
 //getter and setters
 
-float Circle::getRadius() {
+float Entity::getRadius() {
     return radius;
 }
 
-Color Circle::getColor() {
+Color Entity::getColor() {
     return color;
 }
 
-void Circle::setColor(Color newColor) {
+void Entity::setColor(Color newColor) {
     color = newColor;
 }
 
-int Circle::getXPos() {
+int Entity::getXPos() {
     return xPos;
 }
 
-int Circle::getYPos() {
+int Entity::getYPos() {
     return yPos;
 }
 
-void Circle::setXPos(int newXPos) {
+void Entity::setXPos(int newXPos) {
     xPos = newXPos;
 }
 
-void Circle::setYPos(int newYPos) {
+void Entity::setYPos(int newYPos) {
     yPos = newYPos;
 }
 
-float Circle::getXVelocity() {
+float Entity::getXVelocity() {
     return xVelocity;
 }
 
-float Circle::getYVelocity() {
+float Entity::getYVelocity() {
     return yVelocity;
 }
 
-float Circle::getEnvFloor() {
+float Entity::getEnvFloor() {
     return envFloor;
 }
 
-float Circle::getEnvCeiling() {
+float Entity::getEnvCeiling() {
     return envCeiling;
 }
 
-float Circle::getEnvLeft() {
+float Entity::getEnvLeft() {
     return envLeft;
 }
 
-float Circle::getEnvRight() {
+float Entity::getEnvRight() {
     return envRight;
 }
 
-void Circle::setXVelocity(float newXVelocity) {
+void Entity::setXVelocity(float newXVelocity) {
     xVelocity = newXVelocity;
 }
 
-void Circle::setYVelocity(float newYVelocity) {
+void Entity::setYVelocity(float newYVelocity) {
     yVelocity = newYVelocity;
 }
 
-Rectangle Circle::getHitbox() {
+Rectangle Entity::getHitbox() {
     return hitbox;
 }
 

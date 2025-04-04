@@ -1,6 +1,6 @@
 #include "raylib.h"
 #include <string>
-#include "Circle.h"
+#include "Entity.h"
 
 Rectangle obstacle;
 
@@ -23,14 +23,14 @@ Rectangle obstacle;
  */
 
 //have to get this sstuff out of main into a debugging utils file or class
-void showPosition(Circle circle);
-void showVelocity(Circle circle);
-void showCollision(Circle circle);
+void showPosition(Entity circle);
+void showVelocity(Entity circle);
+void showCollision(Entity circle);
 void showTime();
-void showEnvFloor(Circle circle);
-void showEnvCeiling(Circle circle);
-void showEnvLeft(Circle circle);
-void showEnvRight(Circle circle);
+void showEnvFloor(Entity circle);
+void showEnvCeiling(Entity circle);
+void showEnvLeft(Entity circle);
+void showEnvRight(Entity circle);
 void showFPS();
 
 struct Obstacle {
@@ -46,7 +46,7 @@ int main()
     const int screenWidth = 1920; //1280x720 for 720p
     const int screenHeight = 1200; //1920x1200 for fullscreen 16:10
 
-    InitWindow(screenWidth, screenHeight, "Jumping Circle");
+    InitWindow(screenWidth, screenHeight, "Jumping Entity");
     EnableCursor();
 
     SetTargetFPS(60);               // Set our game to run at 60 frames-per-second
@@ -55,7 +55,7 @@ int main()
     // Creating objects
 
 
-    Circle circle(50, BLUE);
+    Entity circle(50, BLUE);
     Rectangle platform = Rectangle{screenWidth * .2, screenHeight / 1.5, screenWidth * .45, 50};
     Rectangle floor = Rectangle{0, screenHeight - 50, screenWidth, 50};
     Rectangle wall = Rectangle{1920 - 450, 750, 100, 400};
@@ -126,7 +126,7 @@ int main()
     return 0;
 }
 
-void showPosition(Circle circle) {
+void showPosition(Entity circle) {
     const char* xStr = std::to_string(circle.getXPos()).c_str();
     const char* yStr = std::to_string(circle.getYPos()).c_str();
     DrawText("xPos: ", 0, 0, 20, BLACK);
@@ -134,7 +134,7 @@ void showPosition(Circle circle) {
     DrawText(xStr, 60, 0, 20, BLACK);
     DrawText(yStr, 60, 20, 20, BLACK);
 };
-void showVelocity(Circle circle) {
+void showVelocity(Entity circle) {
     const char* xVelocityStr = std::to_string(circle.getXVelocity()).c_str();
     const char* yVelocityStr = std::to_string(circle.getYVelocity()).c_str();
     DrawText("xVelocity: ", 0, 60, 20, BLACK);
@@ -142,7 +142,7 @@ void showVelocity(Circle circle) {
     DrawText(xVelocityStr, 110, 60, 20, BLACK);
     DrawText(yVelocityStr, 110, 80, 20, BLACK);
 };
-void showCollision(Circle circle) {
+void showCollision(Entity circle) {
     const char* xCollisionStr = std::to_string(circle.checkCollisionX()).c_str();
     const char* floorCollisionStr = circle.checkCollisionFloor() ? "true" : "false";
     const char* ceilingCollisionStr = circle.checkCollisionCeiling() ? "true" : "false";
@@ -163,11 +163,11 @@ void showTime() {
     DrawText(timeStr, 65, 200, 20, BLACK);
 }
 
-void showEnvFloor (Circle circle) {
+void showEnvFloor (Entity circle) {
     const char* envFlStr = std::to_string(circle.getEnvFloor()).c_str();
 
 
-    DrawText("Circle Env Floor: ", 0, 240, 20, BLACK);
+    DrawText("Entity Env Floor: ", 0, 240, 20, BLACK);
     DrawText(envFlStr, 190, 240, 20, BLACK);
     if (circle.getEnvFloor() == GetScreenHeight()) {
         const char* envIsScreenHeight = "(Screen Height)";
@@ -175,11 +175,11 @@ void showEnvFloor (Circle circle) {
     }
 }
 
-void showEnvCeiling (Circle circle) {
+void showEnvCeiling (Entity circle) {
     const char* envClStr = std::to_string(circle.getEnvCeiling()).c_str();
 
 
-    DrawText("Circle Env Ceiling: ", 0, 260, 20, BLACK);
+    DrawText("Entity Env Ceiling: ", 0, 260, 20, BLACK);
     DrawText(envClStr, 190, 260, 20, BLACK);
     if (circle.getEnvFloor() == 0) {
         const char* envIsScreenHeight = "(Screen Height)";
@@ -187,19 +187,19 @@ void showEnvCeiling (Circle circle) {
     }
 }
 
-void showEnvLeft (Circle circle) {
+void showEnvLeft (Entity circle) {
     const char* envClStr = std::to_string(circle.getEnvLeft()).c_str();
 
 
-    DrawText("Circle Env Left: ", 0, 280, 20, BLACK);
+    DrawText("Entity Env Left: ", 0, 280, 20, BLACK);
     DrawText(envClStr, 190, 280, 20, BLACK);
 }
 
-void showEnvRight (Circle circle) {
+void showEnvRight (Entity circle) {
     const char* envClStr = std::to_string(circle.getEnvRight()).c_str();
 
 
-    DrawText("Circle Env Right: ", 0, 300, 20, BLACK);
+    DrawText("Entity Env Right: ", 0, 300, 20, BLACK);
     DrawText(envClStr, 190, 300, 20, BLACK);
 }
 
