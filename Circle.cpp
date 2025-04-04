@@ -268,22 +268,48 @@ void Circle::EnvCollision(Rectangle objArray[], int objs) {
     for (int i = 0; i < objs; ++i) {
         if (CheckCollisionRecs(objArray[i], hitbox)) {
             collided = true;
+            bool onPlatform = false;
+            bool hitWall = false; //trying to fix corner collision bug here
 
             if (this->yPos < objArray[i].y) { // standing on platform
-                this->envFloor = objArray[i].y + 1;
-            }
-            if (this->yPos > objArray[i].y + objArray[i].height) { // hitting ceiling
-                this->envCeiling = objArray[i].y + objArray[i].height;
-            }
-            if (this->xPos <= objArray[i].x) { //collision to right of circle
-                this->envRight = objArray[i].x + 1;
-            }
-            if (this->xPos > objArray[i].x + objArray[i].width) { //collision to left of the circle
-                this->envLeft = objArray[i].x + objArray[i].width - 1;
+                this->envFloor = objArray[i].y + 1; // + 1 fixes frame vibrating bug
+                onPlatform = true;
             }
 
+            if (this->xPos < objArray[i].x) { //collision to right of circle
+                //fix corner collision here?
+
+                if (!onPlatform) { //works for now, but what if circle is on an L shape platform??
+                    //wow L shape actually works
+                    this->envRight = objArray[i].x + 1;
+                    hitWall = true;
+                }
+            }
+            if (this->xPos > objArray[i].x + objArray[i].width) { //collision to left of the circle
+                if (!onPlatform) {
+                    this->envLeft = objArray[i].x + objArray[i].width - 1;
+                    hitWall = true;
+                }
+
+            }
+
+            if (this->yPos > objArray[i].y + objArray[i].height) { // hitting ceiling
+                if (!hitWall) {
+                    //bad corner collision happening here too
+                    this->envCeiling = objArray[i].y + objArray[i].height;
+                }
+
+            }
         }
     }
+}
+
+bool Circle::DoubleCollision() {
+    if (checkCollisionFloor() && checkCollisionX()) {
+        //
+
+    }
+    return false;
 }
 
 void Circle::Update(Rectangle objArray[], int objs) {
@@ -291,8 +317,6 @@ void Circle::Update(Rectangle objArray[], int objs) {
     MoveUpDown();
     UpdateHitbox();
     EnvCollision(objArray, objs);
-
-    // envFloor = GetScreenHeight();
 }
 //getter and setters
 

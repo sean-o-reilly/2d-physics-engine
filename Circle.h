@@ -69,6 +69,7 @@ public:
     void DrawHitbox();
 
     void EnvCollision(Rectangle objArray[], int objs);
+    bool DoubleCollision();
 
     void Update(Rectangle objArray[], int objs);
 

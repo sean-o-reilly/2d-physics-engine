@@ -8,21 +8,21 @@ Rectangle obstacle;
  *
  *  Condense main
  *
- *  Collisions-
+ *  General enhance OOP in the codebase
+ *   - Better data hiding
+ *   - Setup polymorphism and abstracted base classes
+ *   - Aim at making the draw call loop a bit cleaner and scalable
  *
- *      need to create an object/obstacle base class, to derive other classes from that base class
- *      make a vector/array of those objects that can be iterated through every frame to check for collisions
- *      should probably implement matricies to condense object positions
+ *  As of now the collision, friction, velocity and general environment is working
+ *  fine, but I need to fix a small double collision off-by-1
+ *  bug when on the corner of a platform. this is preventing circle from "rolling"
+ *  off edges of platforms, but it can jump just fine
+ *
+ *  Setup better information/debugging HUD
  *
  */
 
-/*FIXED:
- *
- * Wall running bugs
- * floor collision glitching
- *
- */
-
+//have to get this sstuff out of main into a debugging utils file or class
 void showPosition(Circle circle);
 void showVelocity(Circle circle);
 void showCollision(Circle circle);
@@ -31,6 +31,7 @@ void showEnvFloor(Circle circle);
 void showEnvCeiling(Circle circle);
 void showEnvLeft(Circle circle);
 void showEnvRight(Circle circle);
+void showFPS();
 
 struct Obstacle {
     Rectangle rec;
@@ -49,6 +50,7 @@ int main()
     EnableCursor();
 
     SetTargetFPS(60);               // Set our game to run at 60 frames-per-second
+
     //--------------------------------------------------------------------------------------
     // Creating objects
 
@@ -57,6 +59,7 @@ int main()
     Rectangle platform = Rectangle{screenWidth * .2, screenHeight / 1.5, screenWidth * .45, 50};
     Rectangle floor = Rectangle{0, screenHeight - 50, screenWidth, 50};
     Rectangle wall = Rectangle{1920 - 450, 750, 100, 400};
+    Rectangle wall2 = Rectangle{platform.x - 100, platform.y - 400, 100, 400};
 
     //make obstacles struct with Rectangle and color pair
     // ^^
@@ -65,8 +68,9 @@ int main()
     obstacles[0] = platform;
     obstacles[1] = floor;
     obstacles[2] = wall;
+    obstacles[3] = wall2;
 
-    int objCount = 3;
+    int objCount = 4;
 
     // Main game loop
     while (!WindowShouldClose())    // Detect window close button or ESC key
@@ -76,6 +80,7 @@ int main()
 
         //user control + object interaction
         circle.Update(obstacles, objCount);
+        // circle.DrawHitbox();
 
         PollInputEvents();  //end of inputs for this frame
 
@@ -97,6 +102,7 @@ int main()
         showEnvCeiling(circle);
         showEnvLeft(circle);
         showEnvRight(circle);
+        showFPS();
 
         // for (int i = 0; i < objCount; i++) {
         //     DrawRectangleRec(obstacles[i], BLACK);
@@ -104,6 +110,7 @@ int main()
         DrawRectangleRec(obstacles[0], BLACK);
         DrawRectangleRec(obstacles[1], GRAY);
         DrawRectangleRec(obstacles[2], GREEN);
+        DrawRectangleRec(obstacles[3], RED);
 
         circle.Draw();
 
@@ -194,4 +201,11 @@ void showEnvRight (Circle circle) {
 
     DrawText("Circle Env Right: ", 0, 300, 20, BLACK);
     DrawText(envClStr, 190, 300, 20, BLACK);
+}
+
+void showFPS() {
+    const char* fpsStr = std::to_string(GetFPS()).c_str();
+
+    DrawText("FPS: ", 0, 320, 20, BLACK);
+    DrawText(fpsStr, 190, 320, 20, BLACK);
 }
