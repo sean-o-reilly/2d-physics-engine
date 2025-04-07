@@ -1,12 +1,15 @@
 #include "raylib.h"
 #include <string>
 #include "Entity.h"
+#include <array>
 
 Rectangle obstacle;
 
 /*TODO:
  *
  *  Condense main
+ *  Move ALL debugging drawing utilities to the inside of entity, get them out of main
+ *  *except for main debuggers, those can go in a different file
  *
  *  General enhance OOP in the codebase
  *   - Better data hiding
@@ -67,13 +70,14 @@ int main()
     //make obstacles struct with Rectangle and color pair
     // ^^
 
-    Rectangle obstacles[10];
+    // Rectangle obstacles[10];
+    const int objCount = 4;
+    std::array<Rectangle, objCount> obstacles;
+
     obstacles[0] = platform;
     obstacles[1] = floor;
     obstacles[2] = wall;
     obstacles[3] = wall2;
-
-    int objCount = 4;
 
     bool showDebugMenu = false;
 
@@ -84,7 +88,7 @@ int main()
         //----------------------------------------------------------------------------------
 
         //user control + object interaction
-        circle.Update(obstacles, objCount);
+        circle.Update(obstacles.data(), objCount);
 
         //toggle debuging menu
         if (GetKeyPressed() == 'P') showDebugMenu = !showDebugMenu;
