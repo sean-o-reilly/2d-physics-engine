@@ -9,7 +9,7 @@
 #include "Entity.h"
 #include <string>
 
-//main debuggeres
+//MAIN DEBUGGING
 inline void showTime(int x, int y, int fontSize, Color color) {
     const char* timeStr = std::to_string(GetTime()).c_str();
 
@@ -42,37 +42,44 @@ inline void showDebugMain(int x, int y, int fontSize, Color color) {
     DrawRectangleLinesEx(border, 3, color);
 }
 
-//need to mofidy these to take in positions
-inline void showPosition(Entity ent) {
+//ENTITY DEBUGGING
+inline void showPosition(Entity ent, Vector2 pos, int fontSize, Color color) {
     const char* xStr = std::to_string(ent.getXPos()).c_str();
     const char* yStr = std::to_string(ent.getYPos()).c_str();
-    DrawText("xPos: ", 0, 0, 20, BLACK);
-    DrawText("yPos: ", 0, 20, 20, BLACK);
-    DrawText(xStr, 60, 0, 20, BLACK);
-    DrawText(yStr, 60, 20, 20, BLACK);
+
+    DrawText("xPos: ", pos.x, pos.y, fontSize, color);
+    DrawText(xStr, pos.x + (4 * fontSize), pos.y, fontSize, color);
+
+    DrawText("yPos: ", pos.x, pos.y + fontSize, fontSize, color);
+    DrawText(yStr, pos.x + (4 * fontSize), pos.y + fontSize, fontSize, color);
 };
-inline void showVelocity(Entity ent) {
+inline void showVelocity(Entity ent, Vector2 pos, int fontSize, Color color) {
     const char* xVelocityStr = std::to_string(ent.getXVelocity()).c_str();
     const char* yVelocityStr = std::to_string(ent.getYVelocity()).c_str();
-    DrawText("xVelocity: ", 0, 60, 20, BLACK);
-    DrawText("yVelocity: ", 0, 80, 20, BLACK);
-    DrawText(xVelocityStr, 110, 60, 20, BLACK);
-    DrawText(yVelocityStr, 110, 80, 20, BLACK);
+
+    DrawText("xVel: ", pos.x, pos.y, fontSize, color);
+    DrawText(xVelocityStr, pos.x + (4 * fontSize), pos.y, fontSize, color);
+
+    DrawText("yVel: ", pos.x, pos.y + fontSize, fontSize, color);
+    DrawText(yVelocityStr, pos.x + (4 * fontSize), pos.y + fontSize, fontSize, color);
 };
-inline void showCollision(Entity ent) {
+inline void showCollision(Entity ent, Vector2 pos, int fontSize, Color color) {
     const char* xCollisionStr = std::to_string(ent.checkCollisionX()).c_str();
+    if (*xCollisionStr == '7') xCollisionStr = "Left";
+    if (*xCollisionStr == '8') xCollisionStr = "Right";
+    if (*xCollisionStr == '3') xCollisionStr = "None";
     const char* floorCollisionStr = ent.checkCollisionFloor() ? "true" : "false";
     const char* ceilingCollisionStr = ent.checkCollisionCeiling() ? "true" : "false";
 
-    DrawText("X Collision: ", 0, 120, 20, BLACK);
-    DrawText("Floor Collision: ", 0, 140, 20, BLACK);
-    DrawText("Ceiling Collision: ", 0, 160, 20, BLACK);
+    DrawText("X Col: ", pos.x, pos.y, fontSize, color);
+    DrawText("Floor Col: ", pos.x, pos.y + fontSize, fontSize, color);
+    DrawText("Ceiling Col: ", pos.x, pos.y + (2 * fontSize), fontSize, color);
 
-    DrawText(xCollisionStr, 115, 120, 20, BLACK);
-    DrawText(floorCollisionStr, 165, 140, 20, BLACK);
-    DrawText(ceilingCollisionStr, 165, 160, 20, BLACK);
+    DrawText(xCollisionStr, pos.x + (4 * fontSize), pos.y, fontSize, color);
+    DrawText(floorCollisionStr, pos.x + (7 * fontSize), pos.y + fontSize, fontSize, color);
+    DrawText(ceilingCollisionStr, pos.x + (7 * fontSize), pos.y + (2 * fontSize), fontSize, color);
 };
-inline void showEnvFloor (Entity ent) {
+inline void showEnvFloor (Entity ent, Vector2 pos, int fontSize, Color color) {
     const char* envFlStr = std::to_string(ent.getEnvFloor()).c_str();
 
 
@@ -83,7 +90,7 @@ inline void showEnvFloor (Entity ent) {
         DrawText(envIsScreenHeight, 310, 240, 20, BLACK);
     }
 }
-inline void showEnvCeiling (Entity ent) {
+inline void showEnvCeiling (Entity ent, Vector2 pos, int fontSize, Color color) {
     const char* envClStr = std::to_string(ent.getEnvCeiling()).c_str();
 
 
@@ -94,7 +101,7 @@ inline void showEnvCeiling (Entity ent) {
         DrawText(envIsScreenHeight, 310, 260, 20, BLACK);
     }
 }
-inline void showEnvLeft (Entity ent) {
+inline void showEnvLeft (Entity ent, Vector2 pos, int fontSize, Color color) {
     const char* envClStr = std::to_string(ent.getEnvLeft()).c_str();
 
 
@@ -108,7 +115,23 @@ inline void showEnvRight (Entity ent) {
     DrawText("Entity Env Right: ", 0, 300, 20, BLACK);
     DrawText(envClStr, 190, 300, 20, BLACK);
 }
-inline void debugEntity(Entity ent) {}
+inline void showDebugEntity(Entity ent, Vector2 pos, int fontSize, Color color) {
+    const int lines = 7;
+
+
+    Rectangle border = Rectangle{pos.x - (fontSize / 4), pos.y - (fontSize / 4),
+        fontSize * 10, (lines * fontSize) + (fontSize / 2)};
+
+    DrawRectangleRec(border, LIGHTGRAY);
+
+    showPosition(ent, pos, fontSize, color);
+    pos.y += fontSize * 2;
+    showVelocity(ent, pos, fontSize, color);
+    pos.y += fontSize * 2;
+    showCollision(ent, pos, fontSize, color);
+
+    ent.DrawHitbox();
+}
 
 
 #endif //UTILS_H

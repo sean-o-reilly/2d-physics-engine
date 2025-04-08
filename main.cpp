@@ -108,8 +108,8 @@ int main()
                 for (Rectangle rec : obstacles) {
                     DrawRectangleLinesEx(rec, 5, RED);
                 }
-                user.DrawHitbox();
-                //put debug entity function here
+                showDebugEntity(user, Vector2{user.getXPos() - 100, user.getYPos() - 200}, 20, BLUE);
+
             }
 
         EndDrawing();
