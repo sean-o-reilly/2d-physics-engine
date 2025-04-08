@@ -84,6 +84,7 @@ int main()
     assert(IsTextureValid(background));
 
     bool showDebugMenu = false;
+    //
 
     // Main rendering loop
     while (!WindowShouldClose())    // Detect window close button or ESC key
