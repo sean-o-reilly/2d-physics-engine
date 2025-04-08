@@ -67,6 +67,7 @@ inline void showCollision(Entity ent, Vector2 pos, int fontSize, Color color) {
     const char* xCollisionStr = std::to_string(ent.checkCollisionX()).c_str();
     if (*xCollisionStr == '7') xCollisionStr = "Left";
     if (*xCollisionStr == '8') xCollisionStr = "Right";
+    if (*xCollisionStr == '3') xCollisionStr = "None";
     const char* floorCollisionStr = ent.checkCollisionFloor() ? "true" : "false";
     const char* ceilingCollisionStr = ent.checkCollisionCeiling() ? "true" : "false";
 
