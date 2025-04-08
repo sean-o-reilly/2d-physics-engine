@@ -40,12 +40,11 @@ int main()
     // Initialization
     //--------------------------------------------------------------------------------------
 
-    const int screenWidth = 1200; //1280x720 for 720p
-    const int screenHeight = 675; //1920x1200 for fullscreen 16:10
+    const int screenWidth = 1920; //1280x720 for 720p
+    const int screenHeight = 1200; //1920x1200 for fullscreen 16:10
 
 
-
-    InitWindow(screenWidth, screenHeight, "Pit 1");
+    InitWindow(screenWidth, screenHeight, "Testing Environment");
     EnableCursor();
 
     SetTargetFPS(60);               // Set our game to run at 60 frames-per-second
@@ -58,33 +57,20 @@ int main()
 
     //Creating environment/scene for testing area
 
-    // const int objCount = 4;
-    // std::array<Rectangle, objCount> obstacles;
-    //
-    // Rectangle platform = Rectangle{screenWidth * .2, screenHeight / 1.5, screenWidth * .45, 50};
-    // Rectangle floor = Rectangle{0, screenHeight - 50, screenWidth, 50};
-    // Rectangle wall = Rectangle{1920 - 450, 750, 100, 400};
-    // Rectangle wall2 = Rectangle{platform.x - 100, platform.y - 400, 100, 400};
-    //
-    // obstacles[0] = platform;
-    // obstacles[1] = floor;
-    // obstacles[2] = wall;
-    // obstacles[3] = wall2;
-
-    //Creating environment for pit 1
-
-    const int objCount = 1;
+    const int objCount = 4;
     std::array<Rectangle, objCount> obstacles;
 
-    Rectangle platform = Rectangle{0, 575, screenWidth, 25};
+    Rectangle platform = Rectangle{screenWidth * .2, screenHeight / 1.5, screenWidth * .45, 50};
+    Rectangle floor = Rectangle{0, screenHeight - 50, screenWidth, 50};
+    Rectangle wall = Rectangle{1920 - 450, 750, 100, 400};
+    Rectangle wall2 = Rectangle{platform.x - 100, platform.y - 400, 100, 400};
+
     obstacles[0] = platform;
-
-
-    background = LoadTexture("C:/Users/oreil/CLionProjects/2d-physics-engine/pit1.jpg"); //must be loaded after window init
-    assert(IsTextureValid(background));
+    obstacles[1] = floor;
+    obstacles[2] = wall;
+    obstacles[3] = wall2;
 
     bool showDebugMenu = false;
-    //
 
     // Main rendering loop
     while (!WindowShouldClose())    // Detect window close button or ESC key
@@ -110,21 +96,21 @@ int main()
             ClearBackground(RAYWHITE);
             DrawTextureV(background, Vector2{0,0},WHITE);
 
+            DrawRectangleRec(obstacles[0], BLACK);
+            DrawRectangleRec(obstacles[1], GRAY);
+            DrawRectangleRec(obstacles[2], GREEN);
+            DrawRectangleRec(obstacles[3], RED);
+
+            user.Draw();
+
             if (showDebugMenu) {
                 showDebugMain(10, 10, 30, GREEN);
                 for (Rectangle rec : obstacles) {
                     DrawRectangleLinesEx(rec, 5, RED);
                 }
-
+                user.DrawHitbox();
                 //put debug entity function here
             }
-
-
-            // DrawRectangleRec(obstacles[1], GRAY);
-            // DrawRectangleRec(obstacles[2], GREEN);
-            // DrawRectangleRec(obstacles[3], RED);
-
-            user.DrawHitbox();
 
         EndDrawing();
         //----------------------------------------------------------------------------------
