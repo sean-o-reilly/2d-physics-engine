@@ -34,6 +34,7 @@ struct Obstacle {
 };
 
 Texture2D background;
+Texture2D scorpion;
 
 int main()
 {
@@ -51,10 +52,6 @@ int main()
     SetTargetFPS(60);               // Set our game to run at 60 frames-per-second
 
     //--------------------------------------------------------------------------------------
-    // Creating objects
-
-
-    Entity user(50, BLUE);
 
     //Creating environment/scene for testing area
 
@@ -72,16 +69,16 @@ int main()
     // obstacles[3] = wall2;
 
     //Creating environment for pit 1
+    background = LoadTexture("C:/Users/oreil/CLionProjects/2d-physics-engine/pit1.jpg"); //must be loaded after window init
+    assert(IsTextureValid(background));
+
+    scorpion = LoadTexture("C:/Users/oreil/CLionProjects/2d-physics-engine/scorpion.png");
+    Entity user(50, BLUE, scorpion);
 
     const int objCount = 1;
     std::array<Rectangle, objCount> obstacles;
-
     Rectangle platform = Rectangle{0, 575, screenWidth, 25};
     obstacles[0] = platform;
-
-
-    background = LoadTexture("C:/Users/oreil/CLionProjects/2d-physics-engine/pit1.jpg"); //must be loaded after window init
-    assert(IsTextureValid(background));
 
     bool showDebugMenu = false;
     //
@@ -113,18 +110,19 @@ int main()
             if (showDebugMenu) {
                 showDebugMain(10, 10, 30, GREEN);
                 for (Rectangle rec : obstacles) {
-                    DrawRectangleLinesEx(rec, 5, RED);
+                    DrawRectangleLinesEx(rec, 5, GREEN);
+                    user.DrawHitbox();
                 }
 
                 //put debug entity function here
             }
 
-
+            user.Draw();
             // DrawRectangleRec(obstacles[1], GRAY);
             // DrawRectangleRec(obstacles[2], GREEN);
             // DrawRectangleRec(obstacles[3], RED);
 
-            user.DrawHitbox();
+
 
         EndDrawing();
         //----------------------------------------------------------------------------------

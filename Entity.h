@@ -40,12 +40,15 @@ private:
     float envLeft;
     float envRight;
 
+    Texture2D texture;
+
     Rectangle hitbox;
+
 
 public:
 
     Entity();
-    Entity(float newRadius, Color newColor);
+    Entity(float newRadius, Color newColor, Texture2D newTexture);
     ~Entity();
 
     char checkCollisionX();

@@ -6,6 +6,7 @@
 #include <string>
 #include <stdlib.h>
 #include <valarray>
+#include <cassert>
 
 
 Entity::Entity() {
@@ -36,7 +37,7 @@ Entity::Entity() {
     //like in Update() -> if touchingFLoor, dont allow y movement downwards, else, freefall
 }
 
-Entity::Entity(float newRadius, Color newColor) {
+Entity::Entity(float newRadius, Color newColor, Texture2D newTexture) {
     radius = newRadius;
     color = newColor;
 
@@ -47,8 +48,8 @@ Entity::Entity(float newRadius, Color newColor) {
     yVelocity = 0.0f;
 
     gravity = -1.8f;
-    movementSpeed = 2.3f;
-    maxSpeed = 20.0f;
+    movementSpeed = 2.3f / 2;
+    maxSpeed = 20.0f / 2;
     friction = 1.3f;
     jumpVelocity = 30.0f;
     doubleJumping = false;
@@ -59,6 +60,8 @@ Entity::Entity(float newRadius, Color newColor) {
     envCeiling = 0;
     envLeft = 0.0;
     envRight = GetScreenWidth();
+    texture = newTexture;
+    assert(IsTextureValid(texture));
 }
 
 Entity::~Entity() = default;    //default destructor
@@ -241,7 +244,9 @@ void Entity::MoveUpDown() {
 }
 
 void Entity::Draw() {
-    DrawCircle(xPos, yPos, radius, color);
+    // DrawCircle(xPos, yPos, radius, color);
+
+    DrawTextureV(texture, Vector2{xPos - 100,yPos - 100},WHITE);
 }
 
 void Entity::UpdateHitbox() {
@@ -249,7 +254,7 @@ void Entity::UpdateHitbox() {
 }
 
 void Entity::DrawHitbox() {
-    DrawRectangleLinesEx(hitbox, 3, RED);
+    DrawRectangleLinesEx(hitbox, 3, BLUE);
 }
 
 void Entity::EnvCollision(Rectangle objArray[], int objs) {
