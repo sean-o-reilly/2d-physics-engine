@@ -15,7 +15,9 @@
 class Entity {
 
 private:
-    float radius;
+    float center;
+    int height;
+    int width;
     Color color;
 
     int xPos;
@@ -41,14 +43,13 @@ private:
     float envRight;
 
     Texture2D texture;
-
     Rectangle hitbox;
 
 
 public:
 
     Entity();
-    Entity(float newRadius, Color newColor, Texture2D newTexture);
+    Entity(float newRadius, int height, int width, Color newColor, Texture2D newTexture);
     ~Entity();
 
     char checkCollisionX();

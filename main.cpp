@@ -69,11 +69,11 @@ int main()
     // obstacles[3] = wall2;
 
     //Creating environment for pit 1
-    background = LoadTexture("C:/Users/oreil/CLionProjects/2d-physics-engine/pit1.jpg"); //must be loaded after window init
+    background = LoadTexture("C:/Users/oreil/CLionProjects/2d-physics-engine/sprites/pit1.jpg"); //must be loaded after window init
     assert(IsTextureValid(background));
 
-    scorpion = LoadTexture("C:/Users/oreil/CLionProjects/2d-physics-engine/scorpion.png");
-    Entity user(50, BLUE, scorpion);
+    scorpion = LoadTexture("C:/Users/oreil/CLionProjects/2d-physics-engine/sprites/scorpion_idle.png");
+    Entity user(50, 296, 168, BLUE, scorpion);
 
     const int objCount = 1;
     std::array<Rectangle, objCount> obstacles;
@@ -109,7 +109,7 @@ int main()
 
             if (showDebugMenu) {
                 showDebugMain(10, 10, 30, GREEN);
-                showDebugEntity(user, Vector2{user.getXPos() - 100, user.getYPos() - 300}, 20, BLUE);
+                showDebugEntity(user, Vector2{user.getXPos() - user.getHitbox().width, user.getYPos() - user.getHitbox().height}, 20, BLUE);
 
                 for (Rectangle rec : obstacles) {
                     DrawRectangleLinesEx(rec, 5, RED);

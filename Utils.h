@@ -44,8 +44,8 @@ inline void showDebugMain(int x, int y, int fontSize, Color color) {
 
 //ENTITY DEBUGGING
 inline void showPosition(Entity ent, Vector2 pos, int fontSize, Color color) {
-    const char* xStr = std::to_string(pos.x).c_str();
-    const char* yStr = std::to_string(pos.y).c_str();
+    const char* xStr = std::to_string(ent.getXPos()).c_str();
+    const char* yStr = std::to_string(ent.getYPos()).c_str();
 
     DrawText("xPos: ", pos.x, pos.y, fontSize, color);
     DrawText(xStr, pos.x + (4 * fontSize), pos.y, fontSize, color);

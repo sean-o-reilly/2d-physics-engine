@@ -11,7 +11,7 @@
 
 Entity::Entity() {
 
-    radius = 60.0f;
+    center = 60.0f;
     color = BLUE;
 
     xPos = GetScreenWidth() / 2;
@@ -37,8 +37,12 @@ Entity::Entity() {
     //like in Update() -> if touchingFLoor, dont allow y movement downwards, else, freefall
 }
 
-Entity::Entity(float newRadius, Color newColor, Texture2D newTexture) {
-    radius = newRadius;
+Entity::Entity(float newCenter, int newHeight, int newWidth, Color newColor, Texture2D newTexture) {
+
+    height = newHeight;
+    width = newWidth;
+
+
     color = newColor;
 
     xPos = GetScreenWidth() / 2;
@@ -54,12 +58,14 @@ Entity::Entity(float newRadius, Color newColor, Texture2D newTexture) {
     jumpVelocity = 25.0f;
     doubleJumping = false;
     lastWallJumpDirection = ' ';
-    hitbox = Rectangle{xPos - radius, yPos - radius, radius * 2, radius * 2};
+
 
     envFloor = GetScreenHeight();
     envCeiling = 0;
     envLeft = 0.0;
     envRight = GetScreenWidth();
+
+
     texture = newTexture;
     assert(IsTextureValid(texture));
 }
@@ -97,17 +103,17 @@ char Entity::checkCollisionX() {
     if (xPos > envLeft + hitbox.width && xPos < envRight - hitbox.width) {
         return ' '; //no collion
     }
-    else if (xPos <= envLeft + hitbox.width) {    //collision left
+    else if (xPos <= envLeft + (hitbox.width / 2)) {    //collision left
 
-        xPos = envLeft + hitbox.width;
+        xPos = envLeft + (hitbox.width / 2);
 
         xVelocity = 0.0f;
 
         return 'L';
     }
-    else if (xPos >= envRight - hitbox.width) { //right
+    else if (xPos >= envRight - (hitbox.width / 2)) { //right
 
-        xPos = envRight - hitbox.width;
+        xPos = envRight - (hitbox.width / 2);
 
         xVelocity = 0.0f;
         return 'R';
@@ -118,13 +124,13 @@ char Entity::checkCollisionX() {
 
 bool Entity::checkCollisionFloor() {
 
-    if (yPos < envFloor - radius) {
+    if (yPos < envFloor - (hitbox.height / 2)) {
 
         return false;
     }
     else {  //collision
-        if (yPos > envFloor - radius) {
-            yPos = envFloor - radius;
+        if (yPos > envFloor - (hitbox.height / 2)) {
+            yPos = envFloor - (hitbox.height / 2);
         }
 
         if (abs(yVelocity)  > 0.0f) {yVelocity = 0.0f;}
@@ -136,12 +142,12 @@ bool Entity::checkCollisionFloor() {
 }
 
 bool Entity::checkCollisionCeiling() {
-    if (yPos > envCeiling + radius) {
+    if (yPos > envCeiling + (hitbox.height / 2)) {
         return false;
     }
     else {  //colliding with ceiling
         yVelocity = 0.0f;
-        if (yPos < envCeiling + radius) {yPos = envCeiling + radius;}
+        if (yPos < envCeiling + (hitbox.height / 2)) {yPos = envCeiling + (hitbox.height / 2);}
     }
     return true;
 }
@@ -244,18 +250,20 @@ void Entity::MoveUpDown() {
 }
 
 void Entity::Draw() {
-    // DrawCircle(xPos, yPos, radius, color);
+    // DrawCircle(xPos, yPos, center, color);
 
-    DrawTextureV(texture, Vector2{xPos - 100,yPos - 100},WHITE);
+    DrawTextureV(texture, Vector2{xPos - (width/2),yPos - (height/2)},WHITE);
+    // DrawTextureRec(Texture2D texture, Rectangle source, Vector2 position, Color tint);
+    // DrawTextureRec(texture, (Rectangle){(float)xPos, (float)yPos, width, height}, Vector2{(float)xPos, (float)yPos}, WHITE);
 }
 
 void Entity::UpdateHitbox() {
-    hitbox = Rectangle{xPos - radius, yPos - radius, radius * 2, radius * 2};
+    hitbox = Rectangle{xPos - (width / 2), yPos - (height / 2), width, height};
 }
 
 void Entity::DrawHitbox() {
     DrawRectangleLinesEx(hitbox, 3, BLUE);
-    DrawCircle(xPos, yPos, 10, PURPLE);
+    DrawCircle(xPos, yPos, 10, PURPLE); //draws center
 }
 
 void Entity::EnvCollision(Rectangle objArray[], int objs) {
@@ -327,7 +335,7 @@ void Entity::Update(Rectangle objArray[], int objs) {
 //getter and setters
 
 float Entity::getRadius() {
-    return radius;
+    return center;
 }
 
 Color Entity::getColor() {
