@@ -109,9 +109,10 @@ int main()
 
             if (showDebugMenu) {
                 showDebugMain(10, 10, 30, GREEN);
+                showDebugEntity(user, Vector2{user.getXPos() - 100, user.getYPos() - 300}, 20, BLUE);
+
                 for (Rectangle rec : obstacles) {
-                    DrawRectangleLinesEx(rec, 5, GREEN);
-                    user.DrawHitbox();
+                    DrawRectangleLinesEx(rec, 5, RED);
                 }
 
                 //put debug entity function here

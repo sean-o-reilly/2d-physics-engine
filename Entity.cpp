@@ -47,14 +47,14 @@ Entity::Entity(float newRadius, Color newColor, Texture2D newTexture) {
     xVelocity = 0.0f;
     yVelocity = 0.0f;
 
-    gravity = -1.8f;
-    movementSpeed = 2.3f / 2;
-    maxSpeed = 20.0f / 2;
+    gravity = -1.3f;
+    movementSpeed = 1.3f;
+    maxSpeed = 12.0f;
     friction = 1.3f;
-    jumpVelocity = 30.0f;
+    jumpVelocity = 25.0f;
     doubleJumping = false;
     lastWallJumpDirection = ' ';
-    hitbox = Rectangle{xPos, yPos, radius, radius};
+    hitbox = Rectangle{xPos, yPos, radius, radius}; //width is right side, height is top
 
     envFloor = GetScreenHeight();
     envCeiling = 0;
@@ -75,7 +75,7 @@ char Entity::checkCollisionX() {
     if (!checkCollisionFloor()) {  //wall jump
 
         if (IsKeyDown(' ')
-            && (xPos <= envLeft + radius || xPos >= envRight - radius)
+            && (xPos <= envLeft + hitbox.width || xPos >= envRight - hitbox.width)
             && (abs(xVelocity) >= maxSpeed * 0.8) //must be going at least 80 percent of max speed to wall jump
             && currentDirection != lastWallJumpDirection //cannot wall jump twice in same direction
             ) {
@@ -94,20 +94,20 @@ char Entity::checkCollisionX() {
         lastWallJumpDirection = ' ';
     }
 
-    if (xPos > envLeft + radius && xPos < envRight - radius) {
+    if (xPos > envLeft + hitbox.width && xPos < envRight - hitbox.width) {
         return ' '; //no collion
     }
-    else if (xPos <= envLeft + radius) {    //collision left
+    else if (xPos <= envLeft + hitbox.width) {    //collision left
 
-        xPos = envLeft + radius;
+        xPos = envLeft + hitbox.width;
 
         xVelocity = 0.0f;
 
         return 'L';
     }
-    else if (xPos >= envRight - radius) { //right
+    else if (xPos >= envRight - hitbox.width) { //right
 
-        xPos = envRight - radius;
+        xPos = envRight - hitbox.width;
 
         xVelocity = 0.0f;
         return 'R';
@@ -255,6 +255,7 @@ void Entity::UpdateHitbox() {
 
 void Entity::DrawHitbox() {
     DrawRectangleLinesEx(hitbox, 3, BLUE);
+    DrawCircle(xPos, yPos, 10, PURPLE);
 }
 
 void Entity::EnvCollision(Rectangle objArray[], int objs) {
