@@ -87,7 +87,7 @@ int main()
     while (!WindowShouldClose())    // Detect window close button or ESC key
     {
         // Update
-        //----------------------------------------------------------------------------------
+        //---------------------------------------------------------------------------------
 
         //user control + object interaction
         user.Update(obstacles.data(), objCount);

@@ -42,7 +42,16 @@ private:
     float envLeft;
     float envRight;
 
-    Texture2D texture;
+    Texture2D spriteSheet;
+    int currentFrame = 0;
+    int frameCounter = 0;
+    int frameSpeed = 8;
+    int totalFrames = 7; //7 for idle sprite sheet
+    int columns = 5;
+    float frameW = 74.0f;
+    float frameH = 132.0f; //png widths for sprite sheet
+    bool facingLeft = false;
+
     Rectangle hitbox;
 
 

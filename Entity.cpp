@@ -66,8 +66,8 @@ Entity::Entity(float newCenter, int newHeight, int newWidth, Color newColor, Tex
     envRight = GetScreenWidth();
 
 
-    texture = newTexture;
-    assert(IsTextureValid(texture));
+    spriteSheet = newTexture;
+    assert(IsTextureValid(spriteSheet));
 }
 
 Entity::~Entity() = default;    //default destructor
@@ -86,9 +86,9 @@ char Entity::checkCollisionX() {
             && currentDirection != lastWallJumpDirection //cannot wall jump twice in same direction
             ) {
 
-            WallJump();
+            // WallJump();
 
-            return ' '; //cancel collision
+            // return ' '; //cancel collision
         }
         else {
             doubleJumping = true;
@@ -177,6 +177,7 @@ void Entity::MoveLeft() {
         }
 
         xPos += xVelocity;
+        facingLeft = true;
     }
 }
 
@@ -196,6 +197,7 @@ void Entity::MoveRight() {
         }
 
         xPos += xVelocity;
+        facingLeft = false;
     }
 }
 
@@ -250,11 +252,28 @@ void Entity::MoveUpDown() {
 }
 
 void Entity::Draw() {
-    // DrawCircle(xPos, yPos, center, color);
+    frameCounter++;
+    if (frameCounter >= frameSpeed) {
+        frameCounter = 0;
+        currentFrame = (currentFrame + 1) % totalFrames;
+    }
 
-    DrawTextureV(texture, Vector2{xPos - (width/2),yPos - (height/2)},WHITE);
-    // DrawTextureRec(Texture2D texture, Rectangle source, Vector2 position, Color tint);
-    // DrawTextureRec(texture, (Rectangle){(float)xPos, (float)yPos, width, height}, Vector2{(float)xPos, (float)yPos}, WHITE);
+    // Calculate frame position in sprite sheet
+    int frameX = currentFrame % columns;
+    int frameY = currentFrame / columns;
+
+    Rectangle sourceRec = {
+        frameW * frameX,
+        frameH * frameY,
+        facingLeft? -frameW : frameW,
+        frameH
+    };
+
+    float scale = 2.0f;
+    Rectangle destRec = { xPos, yPos, frameW * scale, frameH * scale };
+    Vector2 origin = { destRec.width / 2, destRec.height / 2 };
+
+    DrawTexturePro(spriteSheet, sourceRec, destRec, origin, 0.0f, WHITE);
 }
 
 void Entity::UpdateHitbox() {
