@@ -110,6 +110,7 @@ int main()
                 }
                 showDebugEntity(user, Vector2{user.getXPos() - 100, user.getYPos() - 200}, 20, BLUE);
 
+
             }
 
         EndDrawing();
