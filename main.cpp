@@ -53,20 +53,6 @@ int main()
 
     //--------------------------------------------------------------------------------------
 
-    //Creating environment/scene for testing area
-
-    // const int objCount = 4;
-    // std::array<Rectangle, objCount> obstacles;
-    //
-    // Rectangle platform = Rectangle{screenWidth * .2, screenHeight / 1.5, screenWidth * .45, 50};
-    // Rectangle floor = Rectangle{0, screenHeight - 50, screenWidth, 50};
-    // Rectangle wall = Rectangle{1920 - 450, 750, 100, 400};
-    // Rectangle wall2 = Rectangle{platform.x - 100, platform.y - 400, 100, 400};
-    //
-    // obstacles[0] = platform;
-    // obstacles[1] = floor;
-    // obstacles[2] = wall;
-    // obstacles[3] = wall2;
 
     //Creating environment for pit 1
     background = LoadTexture("C:/Users/oreil/CLionProjects/2d-physics-engine/sprites/pit1.jpg"); //must be loaded after window init
@@ -114,14 +100,16 @@ int main()
                 for (Rectangle rec : obstacles) {
                     DrawRectangleLinesEx(rec, 5, RED);
                 }
-
-                //put debug entity function here
             }
 
             user.Draw();
-            // DrawRectangleRec(obstacles[1], GRAY);
-            // DrawRectangleRec(obstacles[2], GREEN);
-            // DrawRectangleRec(obstacles[3], RED);
+
+            if (GetTime() < 5.0f) {
+                DrawText("FIGHT!", screenWidth/2 - 150, screenHeight/2 - 50, 130, RED);
+            }
+            else {
+                DrawText(std::to_string(90 + 5 - (int)GetTime()).c_str(), screenWidth/2, 20, 65, RED);
+            }
 
 
 

@@ -45,8 +45,8 @@ Entity::Entity(float newCenter, int newHeight, int newWidth, Color newColor, Tex
 
     color = newColor;
 
-    xPos = GetScreenWidth() / 2;
-    yPos = -200;
+    xPos = GetScreenWidth() / 3.5;
+    yPos = GetScreenHeight()-100;
 
     xVelocity = 0.0f;
     yVelocity = 0.0f;
