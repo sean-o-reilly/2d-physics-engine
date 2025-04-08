@@ -1,6 +1,8 @@
 #include "raylib.h"
 #include "Entity.h"
 #include "Utils.h"
+#include <cassert>
+
 
 #include <string>
 #include <array>
@@ -25,26 +27,25 @@
  *
  */
 
-//main debuggers
-void showTime(int x, int y, int fontSize, Color color);
-void showFPS(int x, int y, int fontSize, Color color);
-void showDebug(int x, int y, int fontSize, Color color);
-
 //should turn this into an abstracted base class with a variable shape
 struct Obstacle {
     Rectangle rec;
     Color color;
 };
 
+Texture2D background;
+
 int main()
 {
     // Initialization
     //--------------------------------------------------------------------------------------
 
-    const int screenWidth = 1920; //1280x720 for 720p
-    const int screenHeight = 1200; //1920x1200 for fullscreen 16:10
+    const int screenWidth = 1200; //1280x720 for 720p
+    const int screenHeight = 675; //1920x1200 for fullscreen 16:10
 
-    InitWindow(screenWidth, screenHeight, "Jumping Entity");
+
+
+    InitWindow(screenWidth, screenHeight, "Pit 1");
     EnableCursor();
 
     SetTargetFPS(60);               // Set our game to run at 60 frames-per-second
@@ -53,34 +54,45 @@ int main()
     // Creating objects
 
 
-    Entity circle(50, BLUE);
-    Rectangle platform = Rectangle{screenWidth * .2, screenHeight / 1.5, screenWidth * .45, 50};
-    Rectangle floor = Rectangle{0, screenHeight - 50, screenWidth, 50};
-    Rectangle wall = Rectangle{1920 - 450, 750, 100, 400};
-    Rectangle wall2 = Rectangle{platform.x - 100, platform.y - 400, 100, 400};
+    Entity user(50, BLUE);
 
-    //make obstacles struct with Rectangle and color pair
-    // ^^
+    //Creating environment/scene for testing area
 
-    // Rectangle obstacles[10];
-    const int objCount = 4;
+    // const int objCount = 4;
+    // std::array<Rectangle, objCount> obstacles;
+    //
+    // Rectangle platform = Rectangle{screenWidth * .2, screenHeight / 1.5, screenWidth * .45, 50};
+    // Rectangle floor = Rectangle{0, screenHeight - 50, screenWidth, 50};
+    // Rectangle wall = Rectangle{1920 - 450, 750, 100, 400};
+    // Rectangle wall2 = Rectangle{platform.x - 100, platform.y - 400, 100, 400};
+    //
+    // obstacles[0] = platform;
+    // obstacles[1] = floor;
+    // obstacles[2] = wall;
+    // obstacles[3] = wall2;
+
+    //Creating environment for pit 1
+
+    const int objCount = 1;
     std::array<Rectangle, objCount> obstacles;
 
+    Rectangle platform = Rectangle{0, 575, screenWidth, 25};
     obstacles[0] = platform;
-    obstacles[1] = floor;
-    obstacles[2] = wall;
-    obstacles[3] = wall2;
+
+
+    background = LoadTexture("C:/Users/oreil/CLionProjects/2d-physics-engine/pit1.jpg"); //must be loaded after window init
+    assert(IsTextureValid(background));
 
     bool showDebugMenu = false;
 
-    // Main game loop
+    // Main rendering loop
     while (!WindowShouldClose())    // Detect window close button or ESC key
     {
         // Update
         //----------------------------------------------------------------------------------
 
         //user control + object interaction
-        circle.Update(obstacles.data(), objCount);
+        user.Update(obstacles.data(), objCount);
 
         //toggle debuging menu
         if (GetKeyPressed() == 'P') showDebugMenu = !showDebugMenu;
@@ -92,21 +104,26 @@ int main()
         //----------------------------------------------------------------------------------
         BeginDrawing();
 
-        if (IsCursorOnScreen()) {HideCursor();} //get rid of cursor
+            if (IsCursorOnScreen()) {HideCursor();} //get rid of cursor
 
-        ClearBackground(RAYWHITE);
+            ClearBackground(RAYWHITE);
+            DrawTextureV(background, Vector2{0,0},WHITE);
 
-        if (showDebugMenu) {
-            showDebug(10, 10, 30, BLACK);
-            //put debug entity function here
-        }
+            if (showDebugMenu) {
+                showDebugMain(10, 10, 30, GREEN);
+                for (Rectangle rec : obstacles) {
+                    DrawRectangleLinesEx(rec, 5, RED);
+                }
 
-        DrawRectangleRec(obstacles[0], BLACK);
-        DrawRectangleRec(obstacles[1], GRAY);
-        DrawRectangleRec(obstacles[2], GREEN);
-        DrawRectangleRec(obstacles[3], RED);
+                //put debug entity function here
+            }
 
-        circle.Draw();
+
+            // DrawRectangleRec(obstacles[1], GRAY);
+            // DrawRectangleRec(obstacles[2], GREEN);
+            // DrawRectangleRec(obstacles[3], RED);
+
+            user.DrawHitbox();
 
         EndDrawing();
         //----------------------------------------------------------------------------------
@@ -118,40 +135,5 @@ int main()
     //--------------------------------------------------------------------------------------
 
     return 0;
-}
-
-
-
-//main debuggeres
-void showTime(int x, int y, int fontSize, Color color) {
-    const char* timeStr = std::to_string(GetTime()).c_str();
-
-
-    DrawText("Time: ", x, y, fontSize, color);
-    DrawText(timeStr, x+ (fontSize * 3), y, fontSize, color);
-}
-
-void showFPS(int x, int y, int fontSize, Color color) {
-    int fps = GetFPS();
-    const char* fpsStr = std::to_string(fps).c_str();
-    Color fpsColor;
-    if (fps >= 60) fpsColor = GREEN;
-    else if (fps >= 35) fpsColor = YELLOW;
-    else fpsColor = RED;
-
-    DrawText("FPS: ", x, y, fontSize, color);
-    DrawText(fpsStr, x + (3 * fontSize), y, fontSize, fpsColor);
-}
-
-void showDebug(int x, int y, int fontSize, Color color) {
-    int lines = 2;
-
-    showTime(x, y, fontSize, color);
-    showFPS(x, y + fontSize, fontSize, color);
-
-    Rectangle border = Rectangle{x - (fontSize / 4), y - (fontSize / 4),
-        fontSize * 10, (lines * fontSize) + (fontSize / 2)};
-
-    DrawRectangleLinesEx(border, 3, color);
 }
 

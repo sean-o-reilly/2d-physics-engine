@@ -9,8 +9,40 @@
 #include "Entity.h"
 #include <string>
 
-//need to mofidy these to take in positions
+//main debuggeres
+inline void showTime(int x, int y, int fontSize, Color color) {
+    const char* timeStr = std::to_string(GetTime()).c_str();
 
+
+    DrawText("Time: ", x, y, fontSize, color);
+    DrawText(timeStr, x+ (fontSize * 3), y, fontSize, color);
+}
+
+inline void showFPS(int x, int y, int fontSize, Color color) {
+    int fps = GetFPS();
+    const char* fpsStr = std::to_string(fps).c_str();
+    Color fpsColor;
+    if (fps >= 60) fpsColor = GREEN;
+    else if (fps >= 35) fpsColor = YELLOW;
+    else fpsColor = RED;
+
+    DrawText("FPS: ", x, y, fontSize, color);
+    DrawText(fpsStr, x + (3 * fontSize), y, fontSize, fpsColor);
+}
+
+inline void showDebugMain(int x, int y, int fontSize, Color color) {
+    int lines = 2;
+
+    showTime(x, y, fontSize, color);
+    showFPS(x, y + fontSize, fontSize, color);
+
+    Rectangle border = Rectangle{x - (fontSize / 4), y - (fontSize / 4),
+        fontSize * 10, (lines * fontSize) + (fontSize / 2)};
+
+    DrawRectangleLinesEx(border, 3, color);
+}
+
+//need to mofidy these to take in positions
 inline void showPosition(Entity ent) {
     const char* xStr = std::to_string(ent.getXPos()).c_str();
     const char* yStr = std::to_string(ent.getYPos()).c_str();
