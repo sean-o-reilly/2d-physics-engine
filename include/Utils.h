@@ -1,7 +1,3 @@
-//
-// Created by oreil on 4/7/2025.
-//
-
 #ifndef UTILS_H
 #define UTILS_H
 
@@ -12,7 +8,6 @@
 //MAIN DEBUGGING
 inline void showTime(int x, int y, int fontSize, Color color) {
     const char* timeStr = std::to_string(GetTime()).c_str();
-
 
     DrawText("Time: ", x, y, fontSize, color);
     DrawText(timeStr, x+ (fontSize * 3), y, fontSize, color);
@@ -135,3 +130,4 @@ inline void showDebugEntity(Entity ent, Vector2 pos, int fontSize, Color color) 
 
 
 #endif //UTILS_H
+// MOVE FILE TO: include/Utils.h

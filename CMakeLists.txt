@@ -9,8 +9,8 @@ set(CMAKE_CXX_STANDARD 17)
 
 # Add source files
 set(SOURCES
-    main.cpp
-    Entity.cpp
+    src/main.cpp
+    src/Entity.cpp
 )
 
 # Find raylib package (vcpkg style)
@@ -18,7 +18,7 @@ find_package(raylib CONFIG REQUIRED)
 
 add_executable(${PROJECT_NAME} ${SOURCES})
 
-target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_SOURCE_DIR})
+target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/include)
 target_link_libraries(${PROJECT_NAME} raylib)
 
 # Windows: Copy DLLs if needed
