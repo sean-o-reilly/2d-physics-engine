@@ -1,16 +1,8 @@
 #pragma once
 #include "raylib.h"
 
-//
-// Created by oreil on 1/5/2025.
-//
-
-
-
 #ifndef CIRCLE_H
 #define CIRCLE_H
-
-
 
 class Entity {
 
@@ -73,27 +65,37 @@ public:
 
     void Update(Rectangle objArray[], int objs);
 
-
-
-
     float getRadius();
+
     Color getColor();
+
     void setColor(Color newColor);
+
     int getXPos();
+
     int getYPos();
+
     void setXPos(int newXPos);
+
     void setYPos(int newYPos);
+
     float getXVelocity();
+
     float getYVelocity();
+
     void setXVelocity(float newXVelocity);
+
     void setYVelocity(float newYVelocity);
+
     Rectangle getHitbox();
+
     float getEnvFloor();
+
     float getEnvCeiling();
+
     float getEnvLeft();
+
     float getEnvRight();
 };
-
-
 
 #endif //CIRCLE_H

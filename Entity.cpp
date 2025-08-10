@@ -1,12 +1,7 @@
-//
-// Created by oreil on 1/5/2025.
-//
-
 #include "Entity.h"
 #include <string>
 #include <stdlib.h>
 #include <valarray>
-
 
 Entity::Entity() {
 
@@ -31,9 +26,6 @@ Entity::Entity() {
     envCeiling = 0;
     envLeft = 0.0;
     envRight = GetScreenWidth();
-
-    //thinking about making the circle class better by implementing boolean locks for collision
-    //like in Update() -> if touchingFLoor, dont allow y movement downwards, else, freefall
 }
 
 Entity::Entity(float newRadius, Color newColor) {
@@ -61,8 +53,7 @@ Entity::Entity(float newRadius, Color newColor) {
     envRight = GetScreenWidth();
 }
 
-Entity::~Entity() = default;    //default destructor
-
+Entity::~Entity() = default;
 
 char Entity::checkCollisionX() {
 
@@ -383,7 +374,3 @@ void Entity::setYVelocity(float newYVelocity) {
 Rectangle Entity::getHitbox() {
     return hitbox;
 }
-
-
-
-

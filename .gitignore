@@ -1,5 +1,28 @@
 .idea/
+.vscode/
+# CMake build folders
+build/
 cmake-build-debug/
 cmake-build-release/
-CMakeLists.txt
 CMakeFiles/
+CMakeCache.txt
+Makefile
+cmake_install.cmake
+*.sln
+*.vcxproj*
+*.user
+*.obj
+*.pdb
+*.exe
+*.dll
+*.lib
+*.exp
+*.log
+# vcpkg
+vcpkg/
+# OS-specific
+Thumbs.db
+Desktop.ini
+.DS_Store
+# Ignore raylib DLLs if copied
+raylib.dll
