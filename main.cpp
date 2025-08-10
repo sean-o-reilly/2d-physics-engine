@@ -60,10 +60,10 @@ int main()
     const int objCount = 4;
     std::array<Rectangle, objCount> obstacles;
 
-    Rectangle platform = Rectangle{screenWidth * .2, screenHeight / 1.5, screenWidth * .45, 50};
-    Rectangle floor = Rectangle{0, screenHeight - 50, screenWidth, 50};
-    Rectangle wall = Rectangle{1920 - 450, 750, 100, 400};
-    Rectangle wall2 = Rectangle{platform.x - 100, platform.y - 400, 100, 400};
+    Rectangle platform = Rectangle{(float)(screenWidth * .2), (float)(screenHeight / 1.5), (float)(screenWidth * .45), 50.0f};
+    Rectangle floor = Rectangle{0.0f, (float)(screenHeight - 50), (float)screenWidth, 50.0f};
+    Rectangle wall = Rectangle{(float)(1920 - 450), 750.0f, 100.0f, 400.0f};
+    Rectangle wall2 = Rectangle{platform.x - 100.0f, platform.y - 400.0f, 100.0f, 400.0f};
 
     obstacles[0] = platform;
     obstacles[1] = floor;
@@ -94,7 +94,7 @@ int main()
             if (IsCursorOnScreen()) {HideCursor();} //get rid of cursor
 
             ClearBackground(RAYWHITE);
-            DrawTextureV(background, Vector2{0,0},WHITE);
+            DrawTextureV(background, Vector2{0.0f,0.0f},WHITE);
 
             DrawRectangleRec(obstacles[0], BLACK);
             DrawRectangleRec(obstacles[1], GRAY);
@@ -108,7 +108,7 @@ int main()
                 for (Rectangle rec : obstacles) {
                     DrawRectangleLinesEx(rec, 5, RED);
                 }
-                showDebugEntity(user, Vector2{user.getXPos() - 100, user.getYPos() - 200}, 20, BLUE);
+                showDebugEntity(user, Vector2{(float)(user.getXPos() - 100), (float)(user.getYPos() - 200)}, 20, BLUE);
 
 
             }

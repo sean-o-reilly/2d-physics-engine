@@ -36,8 +36,8 @@ inline void showDebugMain(int x, int y, int fontSize, Color color) {
     showTime(x, y, fontSize, color);
     showFPS(x, y + fontSize, fontSize, color);
 
-    Rectangle border = Rectangle{x - (fontSize / 4), y - (fontSize / 4),
-        fontSize * 10, (lines * fontSize) + (fontSize / 2)};
+    Rectangle border = Rectangle{(float)(x - (fontSize / 4)), (float)(y - (fontSize / 4)),
+        (float)(fontSize * 10), (float)((lines * fontSize) + (fontSize / 2))};
 
     DrawRectangleLinesEx(border, 3, color);
 }
@@ -119,8 +119,8 @@ inline void showDebugEntity(Entity ent, Vector2 pos, int fontSize, Color color) 
     const int lines = 7;
 
 
-    Rectangle border = Rectangle{pos.x - (fontSize / 4), pos.y - (fontSize / 4),
-        fontSize * 10, (lines * fontSize) + (fontSize / 2)};
+    Rectangle border = Rectangle{pos.x - (float)(fontSize / 4), pos.y - (float)(fontSize / 4),
+        (float)(fontSize * 10), (float)((lines * fontSize) + (fontSize / 2))};
 
     DrawRectangleRec(border, LIGHTGRAY);
 

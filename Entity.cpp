@@ -53,7 +53,7 @@ Entity::Entity(float newRadius, Color newColor) {
     jumpVelocity = 30.0f;
     doubleJumping = false;
     lastWallJumpDirection = ' ';
-    hitbox = Rectangle{xPos, yPos, radius, radius};
+    hitbox = Rectangle{(float)xPos, (float)yPos, (float)radius, (float)radius};
 
     envFloor = GetScreenHeight();
     envCeiling = 0;
