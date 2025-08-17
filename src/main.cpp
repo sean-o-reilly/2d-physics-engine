@@ -1,9 +1,7 @@
 #include "raylib.h"
 #include "Environment.h"
 #include "StaticBody.h"
-#include <iostream>
 #include "Utils.h"
-#include <filesystem>
 
 int main(int argc, char* argv[])
 {
