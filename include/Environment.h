@@ -1,4 +1,6 @@
 #pragma once
+
+#include "raylib.h"
 #include <vector>
 #include <memory>
 #include "StaticBody.h"
@@ -39,4 +41,6 @@ public:
 
 private:
     ObjectContainer objects;
+
+    Camera2D camera;
 };

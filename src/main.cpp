@@ -7,11 +7,11 @@ int main(int argc, char* argv[])
 {
     Environment loadedEnv = SelectLoadedEnvironment();
 
-    const int SCREEN_WIDTH = 1920; 
-    const int SCREEN_HEIGHT = 1080; 
+    const int screenWidth = 1920; 
+    const int screenHeight = 1080; 
 
-    const std::string WIDOW_TITLE = "Testing Environment - " + GetCurrentTimeString();
-    InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, WIDOW_TITLE.c_str());
+    const std::string windowTitle = "Testing Environment - " + GetCurrentTimeString();
+    InitWindow(screenWidth, screenHeight, windowTitle.c_str());
 
     EnableCursor();
 
