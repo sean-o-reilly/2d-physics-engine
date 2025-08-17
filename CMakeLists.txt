@@ -1,30 +1,12 @@
-
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.15)
 project(2d-physics-engine)
-
-# Diagnostic: print toolchain file
-message(STATUS "CMAKE_TOOLCHAIN_FILE is: ${CMAKE_TOOLCHAIN_FILE}")
 
 set(CMAKE_CXX_STANDARD 17)
 
-# Add source files
-set(SOURCES
-    src/main.cpp
-    src/Entity.cpp
-)
+include_directories(${CMAKE_SOURCE_DIR}/include)
 
-# Find raylib package (vcpkg style)
+file(GLOB SRC_FILES "src/*.cpp")
+add_executable(${PROJECT_NAME} ${SRC_FILES})
+
 find_package(raylib CONFIG REQUIRED)
-
-add_executable(${PROJECT_NAME} ${SOURCES})
-
-target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/include)
-target_link_libraries(${PROJECT_NAME} raylib)
-
-# Windows: Copy DLLs if needed
-if (WIN32)
-    add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different
-            $<TARGET_FILE:raylib>
-            $<TARGET_FILE_DIR:${PROJECT_NAME}>)
-endif()
+target_link_libraries(${PROJECT_NAME} PRIVATE raylib)
