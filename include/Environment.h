@@ -16,7 +16,8 @@ struct ObjectContainer {
 
 class Environment {
 public:
-
+    Environment();
+    
     // Object methods
     void AddStaticObject(std::shared_ptr<StaticBody> obj);
 
@@ -26,7 +27,7 @@ public:
 
     // void RemoveDynamicObject(std::shared_ptr<DynamicBody> obj);
 
-    void Update(float dt);
+    void Update();
     
     void Draw();
 
@@ -43,4 +44,5 @@ private:
     ObjectContainer objects;
 
     Camera2D camera;
+    void UpdateCamera();
 };

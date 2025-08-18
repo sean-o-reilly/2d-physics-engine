@@ -3,6 +3,15 @@
 #include <fstream>
 #include <nlohmann/json.hpp>
 
+Environment::Environment() 
+{
+    camera = { 0 };
+    camera.offset = { 0, 0 };
+    camera.target = { 0, 0 };
+    camera.rotation = 0.0f;
+    camera.zoom = 1.0f;
+}
+
 void Environment::AddStaticObject(std::shared_ptr<StaticBody> obj) {
     objects.staticObjects.push_back(obj);
 }
@@ -12,28 +21,32 @@ void Environment::RemoveStaticObject(std::shared_ptr<StaticBody> obj) {
     vec.erase(std::remove(vec.begin(), vec.end(), obj), vec.end());
 }
 
-// void Environment::AddDynamicObject(std::shared_ptr<DynamicBody> obj) {
-//     objects.dynamicObjects.push_back(obj);
-// }
+// void Environment::AddDynamicObject(std::shared_ptr<DynamicBody> obj) {}
 
-// void Environment::RemoveDynamicObject(std::shared_ptr<DynamicBody> obj) {
-//     auto& vec = objects.dynamicObjects;
-//     vec.erase(std::remove(vec.begin(), vec.end(), obj), vec.end());
-// }
+// void Environment::RemoveDynamicObject(std::shared_ptr<DynamicBody> obj) {}
 
-void Environment::Update(float dt) {
-    // for (auto& obj : objects.dynamicObjects) {
-    //     if (obj) obj->Update(dt);
-    // }
+void Environment::Update() {
+    // TODO: update dynamic objects
+
+    UpdateCamera();
 }
 
 void Environment::Draw() {
+    Update();
+
+    BeginMode2D(camera);
+
+    // temp crosshairs
+    
+    // TODO: wrap in draw objects call
     for (const std::shared_ptr<StaticBody>& obj : objects.staticObjects) {
         if (obj) obj->Draw();
     }
-    // for (const std::shared_ptr<DynamicBody>& obj : objects.dynamicObjects) {
-    //     if (obj) obj->Draw();
-    // }
+    // TODO: draw dynamic objects
+
+    // TODO: crosshairs aren't drawing in here? Looks like they were drawing at top of screen.
+
+    EndMode2D();
 }
 
 nlohmann::json Environment::ToJson() const
@@ -88,4 +101,25 @@ Environment Environment::LoadFromFile(const std::string& path)
     file >> json;
 
     return Environment::FromJson(json);
+}
+
+void Environment::UpdateCamera()
+{
+    // temp controls
+    if (IsKeyDown(KEY_RIGHT))
+    {
+        camera.target.x += 2;
+    }
+    else if (IsKeyDown(KEY_LEFT))
+    {
+        camera.target.x -= 2;
+    }
+    else if (IsKeyDown(KEY_UP))
+    {
+        camera.target.y -= 2;
+    }
+    else if (IsKeyDown(KEY_DOWN))
+    {
+        camera.target.y += 2;
+    }
 }

@@ -20,9 +20,9 @@ int main(int argc, char* argv[])
     while (!WindowShouldClose()) 
     {
         PollInputEvents();  // End of inputs for this frame
-
+        
         BeginDrawing();
-
+        
         ClearBackground(RAYWHITE);
 
         loadedEnv.Draw();
