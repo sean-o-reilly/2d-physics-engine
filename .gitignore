@@ -27,3 +27,5 @@ Desktop.ini
 # Ignore raylib DLLs if copied
 raylib.dll
 saves/
+CodeStyleGuidelines_AgentContext.txt
+run.ps1

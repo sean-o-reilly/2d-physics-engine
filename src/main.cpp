@@ -1,16 +1,16 @@
 #include "raylib.h"
 #include "Environment.h"
-#include "StaticBody.h"
 #include "Utils.h"
 
 int main(int argc, char* argv[])
 {
-    Environment loadedEnv = SelectLoadedEnvironment();
+    Environment loadedEnv;
+    SelectLoadedEnvironment(loadedEnv);
 
     const int screenWidth = 1920; 
     const int screenHeight = 1080; 
 
-    const std::string windowTitle = "Testing Environment - " + GetCurrentTimeString();
+    const std::string windowTitle("Testing Environment - " + GetCurrentTimeString());
     InitWindow(screenWidth, screenHeight, windowTitle.c_str());
 
     EnableCursor();
@@ -24,7 +24,7 @@ int main(int argc, char* argv[])
         BeginDrawing();
         
         ClearBackground(RAYWHITE);
-
+        
         loadedEnv.Draw();
 
         EndDrawing();

@@ -1,10 +1,8 @@
 #pragma once
 
-#include "raylib.h"
-#include <string>
 #include "Environment.h"
-#include <filesystem>
+#include <string>
 
-Environment SelectLoadedEnvironment();
+void SelectLoadedEnvironment(Environment& env);
 
 std::string GetCurrentTimeString();

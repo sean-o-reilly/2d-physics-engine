@@ -1,23 +1,24 @@
 #pragma once
 
 #include "raylib.h"
-#include <vector>
-#include <memory>
 #include "StaticBody.h"
 // #include "DynamicBody.h"
+#include "EnvironmentCamera.h"
 
+#include <vector>
+#include <memory>
 #include <string>
 #include <nlohmann/json.hpp>
 
-struct ObjectContainer {
+struct ObjectContainer 
+{
     std::vector<std::shared_ptr<StaticBody>> staticObjects;
     // std::vector<std::shared_ptr<DynamicBody>> dynamicObjects;
 };
 
-class Environment {
+class Environment 
+{
 public:
-    Environment();
-    
     // Object methods
     void AddStaticObject(std::shared_ptr<StaticBody> obj);
 
@@ -31,7 +32,6 @@ public:
     
     void Draw();
 
-    // Json serialization methods
     nlohmann::json ToJson() const;
 
     static Environment FromJson(const nlohmann::json& j);
@@ -43,6 +43,5 @@ public:
 private:
     ObjectContainer objects;
 
-    Camera2D camera;
-    void UpdateCamera();
+    EnvironmentCamera envCamera;
 };

@@ -1,10 +1,10 @@
 #include "Utils.h"
+    
 #include <ctime>
-
 #include <iostream>
 #include <filesystem>
 
-Environment SelectLoadedEnvironment()
+void SelectLoadedEnvironment(Environment& env)
 {
     std::filesystem::path exePath = std::filesystem::absolute("./");
     std::filesystem::path projectRoot = exePath.parent_path().parent_path().parent_path(); // cd backwards from build/Debug
@@ -12,29 +12,31 @@ Environment SelectLoadedEnvironment()
     std::filesystem::create_directories(saveFolder.string());
 
     std::string envName;
-    std::cout << "Enter environment file name (or press Enter for empty environment): ";
-    std::getline(std::cin, envName);
+    bool loaded = false;
 
-    Environment loadedEnv;
-
-    if (!envName.empty())
+    do 
     {
-        try
-        {
-            loadedEnv = Environment::LoadFromFile(saveFolder.string() + "/" + envName);
-        }
-        catch (const std::exception& e)
-        {
-            std::cerr << "Failed to load environment: " << e.what() << std::endl;
-            loadedEnv = Environment(); // Load empty environment on fail
-        }
-    }
-    else
-    {
-        loadedEnv = Environment();
-    }
+        std::cout << "Enter environment file name (or press Enter for empty environment): ";
+        std::getline(std::cin, envName);
 
-    return loadedEnv;
+        if (envName.empty()) 
+        {
+            env = Environment();
+            loaded = true;
+        } 
+        else 
+        {
+            try 
+            {
+                env = Environment::LoadFromFile(saveFolder.string() + "/" + envName);
+                loaded = true;
+            } 
+            catch (const std::exception& exception) 
+            {
+                std::cerr << "Failed to load environment: " << exception.what() << std::endl;
+            }
+        }
+    } while (!loaded);
 }
 
 std::string GetCurrentTimeString() 
