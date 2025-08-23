@@ -28,7 +28,7 @@ void SelectLoadedEnvironment(Environment& env)
         {
             try 
             {
-                env = Environment::LoadFromFile(saveFolder.string() + "/" + envName);
+                env = Environment::LoadFromFile(saveFolder.string() + "/" + envName + ".json");
                 loaded = true;
             } 
             catch (const std::exception& exception) 

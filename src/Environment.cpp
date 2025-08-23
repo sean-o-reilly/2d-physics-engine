@@ -26,8 +26,6 @@ void Environment::Update()
 
 void Environment::Draw() 
 {
-    Update();
-    
     BeginMode2D(envCamera.Get());
 
     for (const std::shared_ptr<StaticBody>& obj : objects.staticObjects) 

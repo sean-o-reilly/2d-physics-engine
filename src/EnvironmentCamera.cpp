@@ -1,6 +1,8 @@
 #include "EnvironmentCamera.h"
 #include "raylib.h"
 
+#include <cmath>
+
 EnvironmentCamera::EnvironmentCamera()
 {
     camera = {0};
@@ -26,30 +28,54 @@ const Camera2D &EnvironmentCamera::Get() const
 
 void EnvironmentCamera::Update()
 {
+    camera.offset = { GetScreenWidth() / 2.0f, GetScreenHeight() / 2.0f }; // Center the camera
+
+    // Zoom
+    targetZoom = expf(logf(targetZoom) + (GetMouseWheelMove() * zoomStep)); // Mouse wheel calculates target zoom
+
+    if (targetZoom > maxZoom) 
+    {
+        targetZoom = maxZoom;
+    }
+    if (targetZoom < minZoom) 
+    {
+        targetZoom = minZoom;
+    }
+
+    // Lerp will apply smooth zoom exponentially since way add by frame.
+    // The camera will zoom slower as its actual zoom gets closer to its target zoom
+    camera.zoom += (targetZoom - camera.zoom) * zoomLerp; 
+
+    const float cameraZoomInverse = 1.0f / camera.zoom;
+
+    baseCameraSpeed = cameraZoomInverse * cameraZoomBoost; // Camera moves slower when zoomed in, faster when zoomed out
+
+    // Shift to speed up
     if (IsKeyDown(KEY_LEFT_SHIFT) || IsKeyDown(KEY_RIGHT_SHIFT))
     {
-        cameraSpeed = 10.0f;
+        currCameraSpeed = baseCameraSpeed + cameraSpeedBoost;
     }
     else
     {
-        cameraSpeed = 5.0f;
+        currCameraSpeed = baseCameraSpeed;
     }
 
+    // Move
     if (IsKeyDown(KEY_RIGHT) || IsKeyDown(KEY_D))
     {
-        camera.target.x += cameraSpeed;
+        camera.target.x += currCameraSpeed;
     }
     if (IsKeyDown(KEY_LEFT) || IsKeyDown(KEY_A))
     {
-        camera.target.x -= cameraSpeed;
+        camera.target.x -= currCameraSpeed;
     }
     if (IsKeyDown(KEY_UP) || IsKeyDown(KEY_W))
     {
-        camera.target.y -= cameraSpeed;
+        camera.target.y -= currCameraSpeed;
     }
     if (IsKeyDown(KEY_DOWN) || IsKeyDown(KEY_S))
     {
-        camera.target.y += cameraSpeed;
+        camera.target.y += currCameraSpeed;
     }
 }
 
