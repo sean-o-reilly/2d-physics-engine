@@ -15,7 +15,7 @@ StaticBody::StaticBody(const Rectangle& rect)
     {}
 
 StaticBody::StaticBody(const Rectangle& rect, const Color& color)
-    : Object(rect, color) {}
+    : RigidBody(rect, color) {}
 
 StaticBody::~StaticBody() = default;
 

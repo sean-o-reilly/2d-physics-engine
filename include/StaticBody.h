@@ -1,9 +1,9 @@
 #pragma once
-#include "Object.h"
+#include "RigidBody.h"
 
 #include <nlohmann/json.hpp>
 
-class StaticBody : public Object
+class StaticBody : public RigidBody
 {
 public:
     static const std::string jsonKey;
