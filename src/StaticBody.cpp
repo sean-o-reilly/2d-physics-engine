@@ -2,6 +2,9 @@
 
 #include <nlohmann/json.hpp>
 
+const std::string StaticBody::jsonKey = "StaticBody";
+const Color StaticBody::defaultColor = BLUE;
+
 void StaticBody::Draw() const
 {
     DrawRectangleRec(bounds, color);
@@ -46,10 +49,10 @@ StaticBody StaticBody::FromJson(const nlohmann::json& json)
     if (json.contains("color"))
     {
         const auto& c = json["color"];
-        color.r = c.value("r", 0);
-        color.g = c.value("g", 0);
-        color.b = c.value("b", 0);
-        color.a = c.value("a", 255);
+        color.r = static_cast<unsigned char>(c.value("r", 0));
+        color.g = static_cast<unsigned char>(c.value("g", 0));
+        color.b = static_cast<unsigned char>(c.value("b", 0));
+        color.a = static_cast<unsigned char>(c.value("a", 255));
     }
     return StaticBody(rect, color);
 }

@@ -6,6 +6,8 @@
 class StaticBody : public Object
 {
 public:
+    static const std::string jsonKey;
+
     StaticBody(const Rectangle& rect);
 
     StaticBody(const Rectangle& rect, const Color& color);
@@ -19,5 +21,5 @@ public:
     static StaticBody FromJson(const nlohmann::json& j);
 
 private:
-    inline static const Color defaultColor = BLUE;
+    static const Color defaultColor;
 };

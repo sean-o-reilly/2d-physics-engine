@@ -2,11 +2,12 @@
 #include "Environment.h"
 #include "Utils.h"
 
-int main(int argc, char* argv[])
+int main()
 {
+    EnableLeakDetection();
+
     Environment loadedEnv;
     SelectLoadedEnvironment(loadedEnv);
-
     const int screenWidth = 1920; 
     const int screenHeight = 1080; 
 

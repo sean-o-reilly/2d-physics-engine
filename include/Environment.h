@@ -16,6 +16,12 @@ struct ObjectContainer
     // std::vector<std::shared_ptr<DynamicBody>> dynamicObjects;
 };
 
+enum class EnvironmentLoadResult
+{
+    Success,
+    FileNotFound,
+};
+
 class Environment 
 {
 public:
@@ -30,15 +36,15 @@ public:
 
     void Update();
     
-    void Draw();
+    void Draw() const;
 
     nlohmann::json ToJson() const;
 
     static Environment FromJson(const nlohmann::json& j);
 
     bool SaveToJsonFile(const std::string& path) const;
-    
-    static Environment LoadFromFile(const std::string& path);
+
+    static EnvironmentLoadResult LoadFromJsonFile(const std::string& path, Environment& env);
 
 private:
     ObjectContainer objects;

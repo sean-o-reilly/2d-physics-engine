@@ -2,6 +2,7 @@
 #include "raylib.h"
 
 #include <cmath>
+#include <algorithm>
 
 EnvironmentCamera::EnvironmentCamera()
 {
@@ -32,15 +33,7 @@ void EnvironmentCamera::Update()
 
     // Zoom
     targetZoom = expf(logf(targetZoom) + (GetMouseWheelMove() * zoomStep)); // Mouse wheel calculates target zoom
-
-    if (targetZoom > maxZoom) 
-    {
-        targetZoom = maxZoom;
-    }
-    if (targetZoom < minZoom) 
-    {
-        targetZoom = minZoom;
-    }
+    targetZoom = std::clamp(targetZoom, minZoom, maxZoom);
 
     // Lerp will apply smooth zoom exponentially since way add by frame.
     // The camera will zoom slower as its actual zoom gets closer to its target zoom

@@ -3,6 +3,8 @@
 #include <fstream>
 #include <nlohmann/json.hpp>
 
+static const Color defaultColor{0, 121, 241, 255}; // BLUE's RGBA
+
 void Environment::AddStaticObject(std::shared_ptr<StaticBody> obj) 
 {
     objects.staticObjects.push_back(obj);
@@ -20,11 +22,10 @@ void Environment::RemoveStaticObject(std::shared_ptr<StaticBody> obj)
 
 void Environment::Update() 
 {
-    // TODO: update dynamic objects
     envCamera.Update();
 }
 
-void Environment::Draw() 
+void Environment::Draw() const
 {
     BeginMode2D(envCamera.Get());
 
@@ -35,7 +36,6 @@ void Environment::Draw()
             obj->Draw();
         }
     }
-    // TODO: draw dynamic objects
 
     EndMode2D();
     
@@ -50,7 +50,7 @@ nlohmann::json Environment::ToJson() const
     {
         if (obj) 
         {
-            json["staticObjects"].push_back(obj->ToJson());
+            json[StaticBody::jsonKey].push_back(obj->ToJson());
         }
     }
     return json;
@@ -59,9 +59,9 @@ nlohmann::json Environment::ToJson() const
 Environment Environment::FromJson(const nlohmann::json& json)
 {
     Environment env;
-    if (json.contains("staticObjects")) 
+    if (json.contains(StaticBody::jsonKey.c_str())) 
     {
-        for (const auto& objJson : json["staticObjects"]) 
+        for (const auto& objJson : json[StaticBody::jsonKey]) 
         {
             env.AddStaticObject(std::make_shared<StaticBody>(StaticBody::FromJson(objJson)));
         }
@@ -83,18 +83,19 @@ bool Environment::SaveToJsonFile(const std::string& path) const
     return true;
 }
 
-Environment Environment::LoadFromFile(const std::string& path) 
+EnvironmentLoadResult Environment::LoadFromJsonFile(const std::string& path, Environment& env) 
 {
     std::ifstream file(path);
 
     if (!file.is_open())
     {
-        throw std::runtime_error("Could not open file"); // TODO: would rather this return an enum than crash
+        return EnvironmentLoadResult::FileNotFound;
     }
 
     nlohmann::json json;
     file >> json;
 
-    return Environment::FromJson(json);
-}
+    env = Environment::FromJson(json);
 
+    return EnvironmentLoadResult::Success;
+}

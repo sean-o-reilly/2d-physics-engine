@@ -12,7 +12,8 @@ void SelectLoadedEnvironment(Environment& env)
     std::filesystem::create_directories(saveFolder.string());
 
     std::string envName;
-    bool loaded = false;
+    std::string path;
+    EnvironmentLoadResult loadResult = EnvironmentLoadResult::FileNotFound;
 
     do 
     {
@@ -21,22 +22,20 @@ void SelectLoadedEnvironment(Environment& env)
 
         if (envName.empty()) 
         {
-            env = Environment();
-            loaded = true;
+            env = Environment(); 
+            break;
         } 
-        else 
+
+        path = saveFolder.string() + "/" + envName + ".json";
+        
+        loadResult = Environment::LoadFromJsonFile(path, env);
+
+        if (loadResult != EnvironmentLoadResult::Success) 
         {
-            try 
-            {
-                env = Environment::LoadFromFile(saveFolder.string() + "/" + envName + ".json");
-                loaded = true;
-            } 
-            catch (const std::exception& exception) 
-            {
-                std::cerr << "Failed to load environment: " << exception.what() << std::endl;
-            }
+            std::cout << "Failed to load environment from '" << path << "'. Please try again." << std::endl;
         }
-    } while (!loaded);
+
+    } while (loadResult != EnvironmentLoadResult::Success);
 }
 
 std::string GetCurrentTimeString() 
@@ -48,3 +47,15 @@ std::string GetCurrentTimeString()
     strftime(timeStr, sizeof(timeStr), "%Y-%m-%d %H:%M:%S", &localTime);
     return timeStr;
 }
+
+#ifdef _MSC_VER
+#define _CRTDBG_MAP_ALLOC
+#include <crtdbg.h>
+void EnableLeakDetection() {
+    _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
+    _CrtSetReportMode(_CRT_WARN, _CRTDBG_MODE_FILE);
+    _CrtSetReportFile(_CRT_WARN, _CRTDBG_FILE_STDERR);
+}
+#else
+void EnableLeakDetection() {} // Do nothing on non-MSVC compilers
+#endif
