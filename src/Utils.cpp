@@ -30,9 +30,13 @@ void SelectLoadedEnvironment(Environment& env)
         
         loadResult = Environment::LoadFromJsonFile(path, env);
 
-        if (loadResult != EnvironmentLoadResult::Success) 
+        if (loadResult == EnvironmentLoadResult::FileNotFound) 
         {
-            std::cout << "Failed to load environment from '" << path << "'. Please try again." << std::endl;
+            std::cout << "Could not find environment file to load from  at path'" << path << "'. Please try again." << std::endl;
+        }
+        else if (loadResult == EnvironmentLoadResult::JsonParseError) 
+        {
+            std::cout << "ERROR: Json parse error while loading environment at path '" << path << "'. Please check json file for syntax errors." << std::endl << std::endl;
         }
 
     } while (loadResult != EnvironmentLoadResult::Success);

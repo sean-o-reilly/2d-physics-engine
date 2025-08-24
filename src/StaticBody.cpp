@@ -5,11 +5,6 @@
 const std::string StaticBody::jsonKey = "StaticBody";
 const Color StaticBody::defaultColor = BLUE;
 
-void StaticBody::Draw() const
-{
-    DrawRectangleRec(bounds, color);
-}
-
 StaticBody::StaticBody(const Rectangle& rect)
     : StaticBody(rect, defaultColor)
     {}

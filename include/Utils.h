@@ -7,5 +7,5 @@ void SelectLoadedEnvironment(Environment& env);
 
 std::string GetCurrentTimeString();
 
-// Enables MSVC CRT memory leak detection (no-op on other compilers)
+// Enables MSVC CRT memory leak detection
 void EnableLeakDetection();

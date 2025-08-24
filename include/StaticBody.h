@@ -11,8 +11,6 @@ public:
     StaticBody(const Rectangle& rect);
 
     StaticBody(const Rectangle& rect, const Color& color);
-
-    void Draw() const override;
     
     ~StaticBody();
 

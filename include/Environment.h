@@ -2,7 +2,7 @@
 
 #include "raylib.h"
 #include "StaticBody.h"
-// #include "DynamicBody.h"
+#include "DynamicBody.h"
 #include "EnvironmentCamera.h"
 
 #include <vector>
@@ -10,29 +10,23 @@
 #include <string>
 #include <nlohmann/json.hpp>
 
-struct ObjectContainer 
-{
-    std::vector<std::shared_ptr<StaticBody>> staticObjects;
-    // std::vector<std::shared_ptr<DynamicBody>> dynamicObjects;
-};
-
 enum class EnvironmentLoadResult
 {
     Success,
     FileNotFound,
+    JsonParseError
 };
 
 class Environment 
 {
 public:
-    // Object methods
     void AddStaticObject(std::shared_ptr<StaticBody> obj);
 
     void RemoveStaticObject(std::shared_ptr<StaticBody> obj);
 
-    // void AddDynamicObject(std::shared_ptr<DynamicBody> obj);
+    void AddDynamicObject(std::shared_ptr<DynamicBody> obj);
 
-    // void RemoveDynamicObject(std::shared_ptr<DynamicBody> obj);
+    void RemoveDynamicObject(std::shared_ptr<DynamicBody> obj);
 
     void Update();
     
@@ -47,7 +41,15 @@ public:
     static EnvironmentLoadResult LoadFromJsonFile(const std::string& path, Environment& env);
 
 private:
-    ObjectContainer objects;
+    std::vector<std::shared_ptr<StaticBody>> staticObjects;
+
+    std::vector<std::shared_ptr<DynamicBody>> dynamicObjects;
 
     EnvironmentCamera envCamera;
+
+    float gravity = 0.1f;
+
+    void ApplyGravity();
+
+    void CollisionBruteForce();
 };
