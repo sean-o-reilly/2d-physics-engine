@@ -20,6 +20,12 @@ enum class EnvironmentLoadResult
 class Environment 
 {
 public:
+    Environment();
+
+    Environment(const Environment& other);
+
+    Environment& operator=(const Environment& other);
+
     void AddStaticObject(std::shared_ptr<StaticBody> obj);
 
     void RemoveStaticObject(std::shared_ptr<StaticBody> obj);
@@ -47,7 +53,7 @@ private:
 
     EnvironmentCamera envCamera;
 
-    float gravity = 3.0f;
+    float gravity;
 
     void ApplyGravity();
 

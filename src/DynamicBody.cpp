@@ -30,9 +30,19 @@ void DynamicBody::SetPositionY(float y)
     bounds.y = y;
 }
 
+void DynamicBody::SetPositionX(float x)
+{
+    bounds.x = x;
+}
+
 void DynamicBody::SetVelocityY(float y)
 {
     velocity.y = y;
+}
+
+void DynamicBody::SetVelocityX(float x)
+{
+    velocity.x = x;
 }
 
 DynamicBody::DynamicBody(const Rectangle& rect)
@@ -58,6 +68,8 @@ nlohmann::json DynamicBody::ToJson() const
         {"b", color.b},
         {"a", color.a}
     };
+
+    json["velocity"] = { {"x", velocity.x}, {"y", velocity.y} };
     return json;
 }
 
@@ -78,5 +90,12 @@ DynamicBody DynamicBody::FromJson(const nlohmann::json& json)
         color.b = static_cast<unsigned char>(c.value("b", 0));
         color.a = static_cast<unsigned char>(c.value("a", 255));
     }
-    return DynamicBody(rect, color);
+    DynamicBody body(rect, color);
+    if (json.contains("velocity"))
+    {
+        const auto& v = json["velocity"];
+        body.velocity.x = v.value("x", 0.0f);
+        body.velocity.y = v.value("y", 0.0f);
+    }
+    return body;
 }

@@ -19,8 +19,10 @@ public:
     Rectangle GetBounds() const;
 
     void SetPositionY(float y);
+    void SetPositionX(float x);
     
     void SetVelocityY(float y);
+    void SetVelocityX(float x);
 
     DynamicBody(const Rectangle& rect);
 

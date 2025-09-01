@@ -4,6 +4,62 @@
 #include <nlohmann/json.hpp>
 #include <iostream>
 
+Environment::Environment()
+    : envCamera(), gravity(3.0f)
+{}
+
+Environment::Environment(const Environment& other)
+{
+    envCamera = other.envCamera;
+    gravity = other.gravity;
+
+    // Deep copy object vectors
+    for (const auto& obj : other.staticObjects)
+    {
+        if (obj)
+        {
+            staticObjects.push_back(std::make_shared<StaticBody>(*obj));
+        }
+    }
+    for (const auto& obj : other.dynamicObjects)
+    {
+        if (obj)
+        {
+            dynamicObjects.push_back(std::make_shared<DynamicBody>(*obj));
+        }
+    }
+}
+
+Environment& Environment::operator=(const Environment& other)
+{
+    if (this != &other)
+    {
+        staticObjects.clear();
+        dynamicObjects.clear();
+
+        // Deep copy object vectors
+        for (const auto& obj : other.staticObjects)
+        {
+            if (obj)
+            {
+                staticObjects.push_back(std::make_shared<StaticBody>(*obj));
+            }
+        }
+        for (const auto& obj : other.dynamicObjects)
+        {
+            if (obj)
+            {
+                dynamicObjects.push_back(std::make_shared<DynamicBody>(*obj));
+            }
+        }
+
+        // NOTE: Camera is shallow copied in the assignment operator. This allows for camera position to persist in between environment resets.
+        gravity = other.gravity;
+    }
+
+    return *this;
+}
+
 void Environment::AddStaticObject(std::shared_ptr<StaticBody> obj) 
 {
     staticObjects.push_back(obj);
@@ -37,7 +93,7 @@ void Environment::ApplyGravity()
 
 void Environment::CollisionBruteForce()
 {
-    std::function<bool(const Rectangle&, const Rectangle&)> checkCollision = [](const Rectangle& a, const Rectangle& b)
+    auto AABB = [](const Rectangle& a, const Rectangle& b)
     {
         return a.x < b.x + b.width &&
                a.x + a.width > b.x &&
@@ -45,35 +101,65 @@ void Environment::CollisionBruteForce()
                a.y + a.height > b.y;
     };
 
-    for (auto& dyn : dynamicObjects) // Dynamic vs Static
+    // Dynamic vs Static
+    for (auto& dyn : dynamicObjects)
     {
         for (auto& stat : staticObjects)
         {
-            if (dyn && stat && checkCollision(dyn->GetBounds(), stat->GetBounds()))
+            if (dyn && stat && AABB(dyn->GetBounds(), stat->GetBounds()))
             {
-                // Simple resolution: move dyn up to the top of stat and zero y velocity
-                dyn->SetPositionY(stat->GetBounds().y - dyn->GetBounds().height);
-                dyn->SetVelocityY(0);
+                const Rectangle a = dyn->GetBounds();
+                const Rectangle b = stat->GetBounds();
+                float overlapLeft   = (a.x + a.width) - b.x;
+                float overlapRight  = (b.x + b.width) - a.x;
+                float overlapTop    = (a.y + a.height) - b.y;
+                float overlapBottom = (b.y + b.height) - a.y;
+
+                float minX = (overlapLeft < overlapRight) ? overlapLeft : -overlapRight;
+                float minY = (overlapTop < overlapBottom) ? overlapTop : -overlapBottom;
+
+                // Resolve along axis of least penetration
+                if (std::abs(minX) < std::abs(minY)) {
+                    dyn->SetPositionX(a.x - minX);
+                    dyn->SetVelocityX(0);
+                } else {
+                    dyn->SetPositionY(a.y - minY);
+                    dyn->SetVelocityY(0);
+                }
             }
         }
     }
 
-    for (size_t i = 0; i < dynamicObjects.size(); ++i) // Dynamic vs Dynamic
+    // Dynamic vs Dynamic
+    for (size_t i = 0; i < dynamicObjects.size(); ++i)
     {
         for (size_t j = i + 1; j < dynamicObjects.size(); ++j)
         {
             if (dynamicObjects[i] && dynamicObjects[j] &&
-                checkCollision(dynamicObjects[i]->GetBounds(), dynamicObjects[j]->GetBounds()))
+                AABB(dynamicObjects[i]->GetBounds(), dynamicObjects[j]->GetBounds()))
             {
-                // Move one up, one down
-                if (dynamicObjects[i]->GetBounds().y < dynamicObjects[j]->GetBounds().y)
-                {
-                    dynamicObjects[i]->SetPositionY(dynamicObjects[j]->GetBounds().y - dynamicObjects[i]->GetBounds().height);
+                Rectangle a = dynamicObjects[i]->GetBounds();
+                Rectangle b = dynamicObjects[j]->GetBounds();
+                float overlapLeft   = (a.x + a.width) - b.x;
+                float overlapRight  = (b.x + b.width) - a.x;
+                float overlapTop    = (a.y + a.height) - b.y;
+                float overlapBottom = (b.y + b.height) - a.y;
+
+                float minX = (overlapLeft < overlapRight) ? overlapLeft : -overlapRight;
+                float minY = (overlapTop < overlapBottom) ? overlapTop : -overlapBottom;
+
+                // Resolve along axis of least penetration
+                if (std::abs(minX) < std::abs(minY)) {
+                    // Move each half the overlap in x
+                    dynamicObjects[i]->SetPositionX(a.x - minX / 2.0f);
+                    dynamicObjects[j]->SetPositionX(b.x + minX / 2.0f);
+                    dynamicObjects[i]->SetVelocityX(0);
+                    dynamicObjects[j]->SetVelocityX(0);
+                } else {
+                    // Move each half the overlap in y
+                    dynamicObjects[i]->SetPositionY(a.y - minY / 2.0f);
+                    dynamicObjects[j]->SetPositionY(b.y + minY / 2.0f);
                     dynamicObjects[i]->SetVelocityY(0);
-                }
-                else
-                {
-                    dynamicObjects[j]->SetPositionY(dynamicObjects[i]->GetBounds().y - dynamicObjects[j]->GetBounds().height);
                     dynamicObjects[j]->SetVelocityY(0);
                 }
             }

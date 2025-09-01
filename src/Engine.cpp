@@ -2,6 +2,7 @@
 
 const int Engine::screenWidth = 1920; 
 const int Engine::screenHeight = 1080; 
+const float Engine::fixedDeltaTime = 0.006f; // 6ms per frame
 
 void Engine::Run()
 {
@@ -10,6 +11,8 @@ void Engine::Run()
         return;
     }
 
+    Environment initEnv(env); // Copy for resetting at runtime
+
     const std::string windowTitle = ("2D Physics Engine - " + GetCurrentTimeString());
     InitWindow(screenWidth, screenHeight, windowTitle.c_str());
 
@@ -17,18 +20,24 @@ void Engine::Run()
 
     SetTargetFPS(60);   
 
-    const float fixedDeltaTime = 0.006f; // 6ms per frame
     float accumulator = 0.0f;
 
     while (!WindowShouldClose()) 
     {
-        Update(fixedDeltaTime, accumulator);
+        float frameTime = GetFrameTime();
+
+        if (IsKeyDown(KEY_R) && actionCooldown <= 0.0f) // Reset environment
+        {
+            env = initEnv;
+        }
+
+        Update(accumulator);
     }
 
     CloseWindow(); 
 }
 
-void Engine::Update(const float fixedDeltaTime, float& accumulator)
+void Engine::Update(float& accumulator)
 {
     float frameTime = GetFrameTime();
     accumulator += frameTime;
@@ -40,7 +49,7 @@ void Engine::Update(const float fixedDeltaTime, float& accumulator)
     }
 
     PollInputEvents();  // End of inputs for this frame
-    
+
     BeginDrawing();
     ClearBackground(BLACK);
     env.Draw();
