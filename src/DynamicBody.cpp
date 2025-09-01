@@ -4,10 +4,10 @@
 const std::string DynamicBody::jsonKey = "DynamicBody";
 const Color DynamicBody::defaultColor = GREEN;
 
-void DynamicBody::Update()
+void DynamicBody::Update(const float deltaTime)
 {
-    bounds.x += velocity.x;
-    bounds.y += velocity.y;
+    bounds.x += velocity.x * deltaTime;
+    bounds.y += velocity.y * deltaTime;
 }
 
 void DynamicBody::ApplyAcceleration(const Vector2& vel)

@@ -4,10 +4,10 @@
 #include <iostream>
 #include <filesystem>
 
-void SelectLoadedEnvironment(Environment& env)
+bool SelectLoadedEnvironment(Environment& env)
 {
     std::filesystem::path exePath = std::filesystem::absolute("./");
-    std::filesystem::path projectRoot = exePath.parent_path().parent_path().parent_path(); // cd backwards from build/Debug
+    std::filesystem::path projectRoot = exePath; // cd backwards from build/Debug
     std::filesystem::path saveFolder = projectRoot / "saves" / "environments";
     std::filesystem::create_directories(saveFolder.string());
 
@@ -17,16 +17,15 @@ void SelectLoadedEnvironment(Environment& env)
 
     do 
     {
-        std::cout << "Enter environment file name (or press Enter for empty environment): ";
+        std::cout << "Enter environment file name (or press Enter to quit): ";
         std::getline(std::cin, envName);
 
         if (envName.empty()) 
         {
-            env = Environment(); 
-            break;
+            return false;
         } 
 
-        path = saveFolder.string() + "/" + envName + ".json";
+        path = saveFolder.string() + "\\" + envName + ".json";
         
         loadResult = Environment::LoadFromJsonFile(path, env);
 
@@ -40,6 +39,8 @@ void SelectLoadedEnvironment(Environment& env)
         }
 
     } while (loadResult != EnvironmentLoadResult::Success);
+
+    return true;
 }
 
 std::string GetCurrentTimeString() 

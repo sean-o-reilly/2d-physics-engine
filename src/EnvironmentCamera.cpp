@@ -27,7 +27,7 @@ const Camera2D &EnvironmentCamera::Get() const
     return camera;
 }
 
-void EnvironmentCamera::Update()
+void EnvironmentCamera::Update(const float deltaTime)
 {
     camera.offset = { GetScreenWidth() / 2.0f, GetScreenHeight() / 2.0f }; // Center the camera
 
@@ -37,7 +37,7 @@ void EnvironmentCamera::Update()
 
     // Lerp will apply smooth zoom exponentially since way add by frame.
     // The camera will zoom slower as its actual zoom gets closer to its target zoom
-    camera.zoom += (targetZoom - camera.zoom) * zoomLerp; 
+    camera.zoom += zoomSpeed * ((targetZoom - camera.zoom) * zoomLerp) * deltaTime;
 
     const float cameraZoomInverse = 1.0f / camera.zoom;
 
@@ -56,19 +56,19 @@ void EnvironmentCamera::Update()
     // Move
     if (IsKeyDown(KEY_RIGHT) || IsKeyDown(KEY_D))
     {
-        camera.target.x += currCameraSpeed;
+        camera.target.x += currCameraSpeed * deltaTime;
     }
     if (IsKeyDown(KEY_LEFT) || IsKeyDown(KEY_A))
     {
-        camera.target.x -= currCameraSpeed;
+        camera.target.x -= currCameraSpeed * deltaTime;
     }
     if (IsKeyDown(KEY_UP) || IsKeyDown(KEY_W))
     {
-        camera.target.y -= currCameraSpeed;
+        camera.target.y -= currCameraSpeed * deltaTime;
     }
     if (IsKeyDown(KEY_DOWN) || IsKeyDown(KEY_S))
     {
-        camera.target.y += currCameraSpeed;
+        camera.target.y += currCameraSpeed * deltaTime;
     }
 }
 

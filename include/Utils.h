@@ -3,7 +3,7 @@
 #include "Environment.h"
 #include <string>
 
-void SelectLoadedEnvironment(Environment& env);
+bool SelectLoadedEnvironment(Environment& env);
 
 std::string GetCurrentTimeString();
 

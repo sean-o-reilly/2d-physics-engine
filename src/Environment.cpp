@@ -81,9 +81,9 @@ void Environment::CollisionBruteForce()
     }
 }
 
-void Environment::Update() 
+void Environment::Update(float deltaTime) 
 {
-    envCamera.Update();
+    envCamera.Update(deltaTime);
     
     ApplyGravity();
 
@@ -91,7 +91,7 @@ void Environment::Update()
     {
         if (dynamicObj) 
         {
-            dynamicObj->Update();
+            dynamicObj->Update(deltaTime);
         }
     }
     

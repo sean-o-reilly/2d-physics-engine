@@ -28,7 +28,7 @@ public:
 
     void RemoveDynamicObject(std::shared_ptr<DynamicBody> obj);
 
-    void Update();
+    void Update(const float deltaTime);
     
     void Draw() const;
 
@@ -47,7 +47,7 @@ private:
 
     EnvironmentCamera envCamera;
 
-    float gravity = 0.1f;
+    float gravity = 3.0f;
 
     void ApplyGravity();
 

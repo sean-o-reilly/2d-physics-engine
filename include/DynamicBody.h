@@ -10,7 +10,7 @@ class DynamicBody : public RigidBody
 public:
     static const std::string jsonKey;
 
-    void Update();
+    void Update(const float deltaTime);
 
     void ApplyAcceleration(const Vector2& vel);
 
