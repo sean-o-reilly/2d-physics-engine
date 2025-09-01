@@ -24,9 +24,7 @@ void Engine::Run()
 
     while (!WindowShouldClose()) 
     {
-        float frameTime = GetFrameTime();
-
-        if (IsKeyDown(KEY_R) && actionCooldown <= 0.0f) // Reset environment
+        if (IsKeyDown(KEY_R)) // Reset environment
         {
             env = initEnv;
         }
