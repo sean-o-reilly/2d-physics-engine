@@ -26,13 +26,9 @@ public:
 
     Environment& operator=(const Environment& other);
 
-    void AddStaticObject(std::shared_ptr<StaticBody> obj);
+    void AddStaticBody(const StaticBody& obj);
 
-    void RemoveStaticObject(std::shared_ptr<StaticBody> obj);
-
-    void AddDynamicObject(std::shared_ptr<DynamicBody> obj);
-
-    void RemoveDynamicObject(std::shared_ptr<DynamicBody> obj);
+    void AddDynamicBody(const DynamicBody& obj);
 
     void Update(const float deltaTime);
     
@@ -47,9 +43,9 @@ public:
     static EnvironmentLoadResult LoadFromJsonFile(const std::string& path, Environment& env);
 
 private:
-    std::vector<std::shared_ptr<StaticBody>> staticObjects;
+    std::vector<StaticBody> staticObjects;
 
-    std::vector<std::shared_ptr<DynamicBody>> dynamicObjects;
+    std::vector<DynamicBody> dynamicObjects;
 
     EnvironmentCamera envCamera;
 
