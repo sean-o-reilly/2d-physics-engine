@@ -2,7 +2,6 @@
 
 #include "raylib.h"
 #include "Environment.h"
-#include "Utils.h"
 
 class Engine
 {

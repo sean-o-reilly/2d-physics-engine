@@ -49,7 +49,7 @@ std::string GetCurrentTimeString()
     struct tm localTime;
     localtime_s(&localTime, &now);
     char timeStr[64];
-    strftime(timeStr, sizeof(timeStr), "%Y-%m-%d %H:%M:%S", &localTime);
+    strftime(timeStr, sizeof(timeStr), "%Y-%m-%d_%H-%M-%S", &localTime); // use - instead of : for file name compatibility
     return timeStr;
 }
 
