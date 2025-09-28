@@ -6,16 +6,6 @@
 #include "EnvironmentCamera.h"
 
 #include <vector>
-#include <memory>
-#include <string>
-#include <nlohmann/json.hpp>
-
-enum class EnvironmentLoadResult
-{
-    Success,
-    FileNotFound,
-    JsonParseError
-};
 
 class Environment 
 {
@@ -34,18 +24,14 @@ public:
     
     void Draw() const;
 
-    nlohmann::json ToJson() const;
+    const std::vector<StaticBody>& GetStaticBodies() const;
 
-    static Environment FromJson(const nlohmann::json& j);
-
-    bool SaveToJsonFile(const std::string& path) const;
-
-    static EnvironmentLoadResult LoadFromJsonFile(const std::string& path, Environment& env);
+    const std::vector<DynamicBody>& GetDynamicBodies() const;
 
 private:
-    std::vector<StaticBody> staticObjects;
+    std::vector<StaticBody> staticBodies;
 
-    std::vector<DynamicBody> dynamicObjects;
+    std::vector<DynamicBody> dynamicBodies;
 
     EnvironmentCamera envCamera;
 

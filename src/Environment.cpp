@@ -14,13 +14,13 @@ Environment::Environment(const Environment& other)
     gravity = other.gravity;
 
     // Deep copy object vectors
-    for (const auto& obj : other.staticObjects)
+    for (const auto& obj : other.staticBodies)
     {
-        staticObjects.push_back(obj);
+        staticBodies.push_back(obj);
     }
-    for (const auto& obj : other.dynamicObjects)
+    for (const auto& obj : other.dynamicBodies)
     {
-        dynamicObjects.push_back(obj);
+        dynamicBodies.push_back(obj);
     }
 }
 
@@ -28,20 +28,20 @@ Environment& Environment::operator=(const Environment& other)
 {
     if (this != &other)
     {
-        staticObjects.clear();
-        dynamicObjects.clear();
+        staticBodies.clear();
+        dynamicBodies.clear();
 
         // Deep copy object vectors
-        for (const auto& obj : other.staticObjects)
+        for (const auto& obj : other.staticBodies)
         {
-            staticObjects.push_back(obj);
+            staticBodies.push_back(obj);
         }
-        for (const auto& obj : other.dynamicObjects)
+        for (const auto& obj : other.dynamicBodies)
         {
-            dynamicObjects.push_back(obj);
+            dynamicBodies.push_back(obj);
         }
 
-        // NOTE: Camera is shallow copied in the assignment operator. This allows for camera position to persist in between environment resets.
+        // HACK: Camera is shallow copied in the assignment operator. This allows for camera position to persist in between environment resets.
         gravity = other.gravity;
     }
 
@@ -50,17 +50,17 @@ Environment& Environment::operator=(const Environment& other)
 
 void Environment::AddStaticBody(const StaticBody& obj) 
 {
-    staticObjects.push_back(obj);
+    staticBodies.push_back(obj);
 }
 
 void Environment::AddDynamicBody(const DynamicBody& obj) 
 {
-    dynamicObjects.push_back(obj);
+    dynamicBodies.push_back(obj);
 }
 
 void Environment::ApplyGravity() 
 {
-    for (DynamicBody& dynamicObj : dynamicObjects) 
+    for (DynamicBody& dynamicObj : dynamicBodies) 
     {
         dynamicObj.ApplyAcceleration({/*x+=*/0, /*y+=*/ gravity});
     }
@@ -77,9 +77,9 @@ void Environment::CollisionBruteForce()
     };
 
     // Dynamic vs Static
-    for (auto& dyn : dynamicObjects)
+    for (auto& dyn : dynamicBodies)
     {
-        for (auto& stat : staticObjects)
+        for (auto& stat : staticBodies)
         {
             if (AABB(dyn.GetBounds(), stat.GetBounds()))
             {
@@ -106,14 +106,14 @@ void Environment::CollisionBruteForce()
     }
 
     // Dynamic vs Dynamic
-    for (size_t i = 0; i < dynamicObjects.size(); ++i)
+    for (size_t i = 0; i < dynamicBodies.size(); ++i)
     {
-        for (size_t j = i + 1; j < dynamicObjects.size(); ++j)
+        for (size_t j = i + 1; j < dynamicBodies.size(); ++j)
         {
-            if (AABB(dynamicObjects[i].GetBounds(), dynamicObjects[j].GetBounds()))
+            if (AABB(dynamicBodies[i].GetBounds(), dynamicBodies[j].GetBounds()))
             {
-                Rectangle a = dynamicObjects[i].GetBounds();
-                Rectangle b = dynamicObjects[j].GetBounds();
+                Rectangle a = dynamicBodies[i].GetBounds();
+                Rectangle b = dynamicBodies[j].GetBounds();
                 float overlapLeft   = (a.x + a.width) - b.x;
                 float overlapRight  = (b.x + b.width) - a.x;
                 float overlapTop    = (a.y + a.height) - b.y;
@@ -125,16 +125,16 @@ void Environment::CollisionBruteForce()
                 // Resolve along axis of least penetration
                 if (std::abs(minX) < std::abs(minY)) {
                     // Move each half the overlap in x
-                    dynamicObjects[i].SetPositionX(a.x - minX / 2.0f);
-                    dynamicObjects[j].SetPositionX(b.x + minX / 2.0f);
-                    dynamicObjects[i].SetVelocityX(0);
-                    dynamicObjects[j].SetVelocityX(0);
+                    dynamicBodies[i].SetPositionX(a.x - minX / 2.0f);
+                    dynamicBodies[j].SetPositionX(b.x + minX / 2.0f);
+                    dynamicBodies[i].SetVelocityX(0);
+                    dynamicBodies[j].SetVelocityX(0);
                 } else {
                     // Move each half the overlap in y
-                    dynamicObjects[i].SetPositionY(a.y - minY / 2.0f);
-                    dynamicObjects[j].SetPositionY(b.y + minY / 2.0f);
-                    dynamicObjects[i].SetVelocityY(0);
-                    dynamicObjects[j].SetVelocityY(0);
+                    dynamicBodies[i].SetPositionY(a.y - minY / 2.0f);
+                    dynamicBodies[j].SetPositionY(b.y + minY / 2.0f);
+                    dynamicBodies[i].SetVelocityY(0);
+                    dynamicBodies[j].SetVelocityY(0);
                 }
             }
         }
@@ -147,7 +147,7 @@ void Environment::Update(float deltaTime)
     
     ApplyGravity();
 
-    for (DynamicBody& dynamicObj : dynamicObjects) 
+    for (DynamicBody& dynamicObj : dynamicBodies) 
     {
         dynamicObj.Update(deltaTime);
     }
@@ -159,12 +159,12 @@ void Environment::Draw() const
 {
     BeginMode2D(envCamera.Get());
 
-    for (const StaticBody& staticObj : staticObjects) 
+    for (const StaticBody& staticObj : staticBodies) 
     {
         staticObj.Draw();
     }
 
-    for (const DynamicBody& dynamicObj : dynamicObjects) 
+    for (const DynamicBody& dynamicObj : dynamicBodies) 
     {
         dynamicObj.Draw();
     }
@@ -174,81 +174,12 @@ void Environment::Draw() const
     envCamera.DrawCrosshairs();
 }
 
-nlohmann::json Environment::ToJson() const
+const std::vector<StaticBody>& Environment::GetStaticBodies() const
 {
-    nlohmann::json json;
-
-    for (const auto& obj : staticObjects) 
-    {
-        json[StaticBody::jsonKey].push_back(obj.ToJson());
-    }
-
-    for (const auto& obj : dynamicObjects) 
-    {
-        json[DynamicBody::jsonKey].push_back(obj.ToJson());
-    }
-
-    return json;
+    return staticBodies;
 }
 
-Environment Environment::FromJson(const nlohmann::json& json)
+const std::vector<DynamicBody>& Environment::GetDynamicBodies() const
 {
-    Environment env;
-    if (json.contains(StaticBody::jsonKey.c_str())) 
-    {
-        for (const auto& objJson : json[StaticBody::jsonKey]) 
-        {
-            env.AddStaticBody(StaticBody::FromJson(objJson));
-        }
-    }
-
-    if (json.contains(DynamicBody::jsonKey.c_str()))
-    {
-        for (const auto& objJson : json[DynamicBody::jsonKey])
-        {
-            env.AddDynamicBody(DynamicBody::FromJson(objJson));
-        }
-    }
-
-    return env;
-}
-
-bool Environment::SaveToJsonFile(const std::string& path) const 
-{
-    nlohmann::json json = this->ToJson();
-    std::ofstream file(path);
-
-    if (!file.is_open()) 
-    {
-        return false;
-    }
-
-    file << json.dump(4);
-    return true;
-}
-
-EnvironmentLoadResult Environment::LoadFromJsonFile(const std::string& path, Environment& env) 
-{
-    std::ifstream file(path);
-
-    if (!file.is_open())
-    {
-        return EnvironmentLoadResult::FileNotFound;
-    }
-
-    nlohmann::json json;
-
-    try 
-    {
-        file >> json;
-    } 
-    catch (const nlohmann::json::parse_error& excpt) 
-    {
-        std::cerr << std::endl << excpt.what() << std::endl;
-        return EnvironmentLoadResult::JsonParseError;
-    }
-
-    env = Environment::FromJson(json);
-
-    return EnvironmentLoadResult::Success;
+    return dynamicBodies;
 }

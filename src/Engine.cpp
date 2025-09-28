@@ -1,5 +1,6 @@
 #include "Engine.h"
 #include "Utils.h"
+#include "Serializer.h"
 
 #include <iostream>
 #include <fstream>
@@ -56,9 +57,8 @@ void Engine::Run()
         benchmarkLog << oss.str();
     };
 
-    const std::string initTime = GetCurrentTimeString();
-    const std::string windowTitle = ("2D Physics Engine - " + initTime);
-    InitWindow(screenWidth, screenHeight, windowTitle.c_str());
+    const char* windowTitle = ("2D Physics Engine - " + GetCurrentTimeString()).c_str();
+    InitWindow(screenWidth, screenHeight, windowTitle);
 
     EnableCursor();
 

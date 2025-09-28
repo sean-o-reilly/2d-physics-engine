@@ -1,8 +1,45 @@
 #include "Utils.h"
+#include "Serializer.h"
     
 #include <ctime>
 #include <iostream>
 #include <filesystem>
+#include <fstream>
+
+enum class EnvironmentLoadResult
+{
+    Success,
+    FileNotFound,
+    JsonParseError
+};
+
+EnvironmentLoadResult LoadFromJsonFile(const std::string& path, Environment& env) 
+{
+    std::ifstream file(path);
+
+    if (!file.is_open())
+    {
+        return EnvironmentLoadResult::FileNotFound;
+    }
+
+    nlohmann::json json;
+
+    try 
+    {
+        file >> json;
+    } 
+    catch (const nlohmann::json::parse_error& excpt) 
+    {
+        std::cerr << std::endl << excpt.what() << std::endl;
+        return EnvironmentLoadResult::JsonParseError;
+    }
+
+    Serializer& serializer = Serializer::GetInstance();
+
+    env = serializer.EnvironmentFromJson(json);
+
+    return EnvironmentLoadResult::Success;
+}
 
 bool SelectLoadedEnvironment(Environment& env)
 {
@@ -27,7 +64,7 @@ bool SelectLoadedEnvironment(Environment& env)
 
         path = saveFolder.string() + "\\" + envName + ".json";
         
-        loadResult = Environment::LoadFromJsonFile(path, env);
+        loadResult = LoadFromJsonFile(path, env);
 
         if (loadResult == EnvironmentLoadResult::FileNotFound) 
         {
