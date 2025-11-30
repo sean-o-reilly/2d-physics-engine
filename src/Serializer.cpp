@@ -87,13 +87,20 @@ DynamicBody Serializer::DynamicBodyFromJson(const nlohmann::json& json)
         color = DynamicBody::defaultColor;
     }
 
-    DynamicBody body(rect, color);
+    float restitution = DynamicBody::defaultRestitution;
+
+    if (json.contains("restitution"))
+    {
+        restitution = json["restitution"];
+    }
+
+    DynamicBody body(rect, color, restitution);
 
     if (json.contains("velocity"))
     {
         const auto& v = json["velocity"];
-        body.SetVelocityX(v.value("x", 0.0f));
-        body.SetVelocityY(v.value("y", 0.0f));
+        body.velocity.x = v.value("x", 0.0f);
+        body.velocity.y = v.value("y", 0.0f);
     }
 
     return body;  

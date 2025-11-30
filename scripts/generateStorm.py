@@ -1,9 +1,13 @@
-# This script generates an environment json file named "storm" with a large platform and n dynamic bodies above it.
-
+"""This script generates an environment json file named "storm" with a large platform and n dynamic bodies above it."""
+import argparse
 import random
 
+parser = argparse.ArgumentParser(description="Generate storm environment JSON.")
+parser.add_argument('--objects', type=int, default=500, help='Number of dynamic bodies')
+args = parser.parse_args()
+
+OBJECTS_COUNT = args.objects
 PLATFORM_WIDTH = 20000
-N = 500
 
 # create an environment json file with a large platform
 with open('saves/environments/storm.json', 'w') as f:
@@ -19,16 +23,16 @@ with open('saves/environments/storm.json', 'w') as f:
 minX = PLATFORM_WIDTH // -2
 maxX = PLATFORM_WIDTH // 2
 maxY = -500 
-minY = -8000 # negative heights are higher up
+minY = -8000
 
-for i in range(0, N): # loop will write n dynamic bodies to a the json file
+for i in range(0, OBJECTS_COUNT): # loop will write n dynamic bodies to a the json file
 
     x = random.randint(minX, maxX)
     y = random.randint(minY, maxY)
 
     dynamicBody = '    {"x": ' + str(x) + ',"y": ' + str(y) + ',"width": 50,"height": 50}'
 
-    if i < N - 1:
+    if i < OBJECTS_COUNT - 1:
         dynamicBody += ",\n"
     else:
         dynamicBody += "\n"

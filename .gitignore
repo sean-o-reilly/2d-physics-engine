@@ -18,6 +18,7 @@ cmake_install.cmake
 *.lib
 *.exp
 *.log
+*.ps1
 # vcpkg
 vcpkg/
 # OS-specific
@@ -28,5 +29,5 @@ Desktop.ini
 raylib.dll
 saves/
 CodeStyleGuidelines_AgentContext.txt
-run.ps1
 logs/
+*.html

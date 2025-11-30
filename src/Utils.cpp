@@ -43,6 +43,8 @@ EnvironmentLoadResult LoadFromJsonFile(const std::string& path, Environment& env
 
 bool SelectLoadedEnvironment(Environment& env)
 {
+    static std::string lastLoaded = "";
+
     std::filesystem::path exePath = std::filesystem::absolute("./");
     std::filesystem::path projectRoot = exePath; // cd backwards from build/Debug
     std::filesystem::path saveFolder = projectRoot / "saves" / "environments";
@@ -54,15 +56,26 @@ bool SelectLoadedEnvironment(Environment& env)
 
     do 
     {
-        std::cout << "Enter environment file name (or press Enter to quit): ";
+        std::cout << "Enter environment file name (or Enter for latest): ";
         std::getline(std::cin, envName);
 
-        if (envName.empty()) 
+        if (envName.empty()) // Enter case
         {
-            return false;
+            if (lastLoaded.length())
+            {
+                path = lastLoaded;
+            }
+            else 
+            {
+                std::cout << "No recent environments loaded." << std::endl;
+                continue;
+            }
         } 
-
-        path = saveFolder.string() + "\\" + envName + ".json";
+        else
+        {
+            path = saveFolder.string() + "\\" + envName + ".json";
+            lastLoaded = path;
+        }
         
         loadResult = LoadFromJsonFile(path, env);
 
@@ -72,7 +85,7 @@ bool SelectLoadedEnvironment(Environment& env)
         }
         else if (loadResult == EnvironmentLoadResult::JsonParseError) 
         {
-            std::cout << "ERROR: Json parse error while loading environment at path '" << path << "'. Please check json file for syntax errors." << std::endl << std::endl;
+            std::cout << "ERROR: Json parse error while loading environment at path '" << path << "'. Please check json file for syntax errors.\n" << std::endl;
         }
 
     } while (loadResult != EnvironmentLoadResult::Success);

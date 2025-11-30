@@ -24,9 +24,9 @@ public:
     
     void Draw() const;
 
-    const std::vector<StaticBody>& GetStaticBodies() const;
+    std::vector<StaticBody>& GetStaticBodies();
 
-    const std::vector<DynamicBody>& GetDynamicBodies() const;
+    std::vector<DynamicBody>& GetDynamicBodies();
 
 private:
     std::vector<StaticBody> staticBodies;
@@ -36,8 +36,4 @@ private:
     EnvironmentCamera envCamera;
 
     float gravity;
-
-    void ApplyGravity();
-
-    void CollisionBruteForce();
 };
