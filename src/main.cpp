@@ -3,7 +3,7 @@
 
 int main()
 { 
-    EnableLeakDetection();
+    Utils::EnableLeakDetection();
     Engine engine;
     engine.Run();
     return 0;

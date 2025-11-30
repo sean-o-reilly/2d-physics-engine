@@ -17,7 +17,7 @@ constexpr float Engine::fixedDeltaTime = 0.006f;
 
 void Engine::Run()
 {
-    while (SelectLoadedEnvironment(env))
+    while (Utils::SelectLoadedEnvironment(env))
     {
         Environment initEnv(env); // Copy init state for resetting at runtime
     
@@ -31,18 +31,18 @@ void Engine::Run()
             benchmarkEnabled = true;
         }
     
-        std::string engineStartTime = GetCurrentTimeString();
+        std::string engineStartTime = Utils::GetCurrentTimeString();
     
         std::ofstream benchmarkLog;
         std::string benchmarkFilePath;
     
         if (benchmarkEnabled)
         {
-            std::filesystem::create_directories("logs");
+            std::filesystem::create_directories("logs/Benchmarks");
             std::time_t now = std::time(nullptr);
             std::tm localTime;
             localtime_s(&localTime, &now);
-    
+
             benchmarkFilePath = "logs/Benchmarks/Benchmark_" + engineStartTime + ".txt";
             std::cout << benchmarkFilePath << std::endl;
             benchmarkLog.open(benchmarkFilePath, std::ios::app);
@@ -65,7 +65,7 @@ void Engine::Run()
             std::tm localTime;
             localtime_s(&localTime, &now);
             std::ostringstream oss;
-            oss << "[" << GetCurrentTimeString() << "]";
+            oss << "[" << Utils::GetCurrentTimeString() << "]";
             benchmarkLog << oss.str();
         };
     
