@@ -1,11 +1,13 @@
 # 2d-physics-engine
-A simple (in progress) physics engine built with raylib and C++, which I started over winter break. 
+A simple (in progress) physics engine built with raylib and C++, which I (re)started this August. 
 
-This August, I returned to this project to refactor it and scale it into a fully fledged simulator. I'm made a good amount of progress on the refactor so far; the engine has a stronger foundation, cleaner code, more practical OOP, etc. I've focused on keeping the code as lightweight, modular, and simple as possible before I get into more complex physics logic.
+**Some of the learning goals for this project are to:**
+- **Cleanly** scale my own C++ application through things like generic and extensible programming, as well as modular, clean, and portable code.
+- Create impressive physics simulations by solving real performance problems and pushing my hardware. This involves cache awareness, careful multithreading, C++ language knowledge, and optimizations supported by precise benchmarking and profiling.
+- Practice managing project lifetimes and staying on track with proper prioritization via kanban boards.
+- Continuously apply concepts I've learned in internships and school to something that I am especially passionate about and is unique to my interests, and just have fun coding.
 
 ### Currently: 
+I've been busy with school and being a SWE intern, but I've finished a decent physics solver that can handle around 1,200 rectangle objects in a scene. I'm moving to spatial partitioning soon to improve performance after taking care of a few QOL features around the engine to clean up the code and help me iterate faster.
 
-I'm planning out an impulse solver to improve on the currently brute forced collision algorithm. Before implementing the solver, I wanted to run some microbenchmarks to get a gauge of where exactly my brute force solution caps out. That way, when the engine code is optimized, there is a measureable improvement. I set up a few python scripts to generate environments of variable size to benchmark, and plot their performance differences. Brute forcing collision between objects in an environment will cap out steeply at around 1000 dynamic objects.
-
-![900 Objects Benchmarked](readme/900ObjectsBruteForce.png)
-![1000 Objects Benchmarked](readme/1000ObjectsBruteForce.png)
+Going to push some demo videos soon!
