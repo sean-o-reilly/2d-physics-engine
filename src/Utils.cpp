@@ -8,42 +8,32 @@
 
 namespace Utils
 {
-    namespace
+    EnvironmentLoadResult LoadEnvironmentFromJsonFile(const std::string& path, Environment& env)
     {
-        enum class EnvironmentLoadResult
+        std::ifstream file(path);
+
+        if (!file.is_open())
         {
-            Success,
-            FileNotFound,
-            JsonParseError
-        };
-
-        EnvironmentLoadResult LoadEnvironmentFromJsonFile(const std::string& path, Environment& env)
-        {
-            std::ifstream file(path);
-
-            if (!file.is_open())
-            {
-                return EnvironmentLoadResult::FileNotFound;
-            }
-
-            nlohmann::json json;
-
-            try
-            {
-                file >> json;
-            }
-            catch (const nlohmann::json::parse_error& excpt)
-            {
-                std::cerr << std::endl << excpt.what() << std::endl;
-                return EnvironmentLoadResult::JsonParseError;
-            }
-
-            Serializer& serializer = Serializer::GetInstance();
-
-            env = serializer.EnvironmentFromJson(json);
-
-            return EnvironmentLoadResult::Success;
+            return EnvironmentLoadResult::FileNotFound;
         }
+
+        nlohmann::json json;
+
+        try
+        {
+            file >> json;
+        }
+        catch (const nlohmann::json::parse_error& excpt)
+        {
+            std::cerr << std::endl << excpt.what() << std::endl;
+            return EnvironmentLoadResult::JsonParseError;
+        }
+
+        Serializer& serializer = Serializer::GetInstance();
+
+        env = serializer.EnvironmentFromJson(json);
+
+        return EnvironmentLoadResult::Success;
     }
 
     bool SelectLoadedEnvironment(Environment& env)

@@ -5,6 +5,15 @@
 
 namespace Utils
 {
+    enum class EnvironmentLoadResult
+    {
+        Success,
+        FileNotFound,
+        JsonParseError
+    };
+
+    EnvironmentLoadResult LoadEnvironmentFromJsonFile(const std::string& path, Environment& env);
+
     bool SelectLoadedEnvironment(Environment& env);
 
     std::string GetCurrentTimeString();
