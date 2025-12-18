@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Environment.h"
+
 #include <string>
 
 namespace Utils
@@ -17,6 +18,8 @@ namespace Utils
     bool SelectLoadedEnvironment(Environment& env);
 
     std::string GetCurrentTimeString();
+
+    void WriteTimeToFile(std::ofstream& file);
 
     // Enables MSVC CRT memory leak detection
     void EnableLeakDetection();

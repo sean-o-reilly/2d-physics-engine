@@ -5,6 +5,9 @@
 #include <iostream>
 #include <filesystem>
 #include <fstream>
+#include <chrono>
+#include <ctime>
+#include <sstream>
 
 namespace Utils
 {
@@ -96,6 +99,11 @@ namespace Utils
         char timeStr[64];
         strftime(timeStr, sizeof(timeStr), "%Y-%m-%d_%H-%M-%S", &localTime); // use - instead of : for file name compatibility
         return timeStr;
+    }
+
+    void WriteTimeToFile(std::ofstream& file)
+    {
+        file << "[" << Utils::GetCurrentTimeString() << "]";
     }
 
 #ifdef _MSC_VER

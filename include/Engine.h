@@ -3,6 +3,8 @@
 #include "raylib.h"
 #include "Environment.h"
 
+#include <fstream>
+
 class Engine
 {
 public:
@@ -10,6 +12,8 @@ public:
 
 private:
     void Update(float& accumulator);
+
+    void UpdateTimed(float& accumulator, std::ofstream& benchmarkLog, float timeoutThreshold);
 
     Environment env;
     
