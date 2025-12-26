@@ -70,7 +70,7 @@ void Environment::Update(const float deltaTime)
         dynamicObj.ApplyAcceleration({/*x+=*/0, /*y+=*/ gravity});
     }
     
-    Solver::CollisionBruteForce(this);
+    Solver::CollisionPrecompute(this);
 }
 
 void Environment::Draw() const

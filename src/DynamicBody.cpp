@@ -5,7 +5,7 @@
 
 const Color DynamicBody::defaultColor = GREEN;
 const float DynamicBody::defaultRestitution = 0.1f;
-const float DynamicBody::sleepThreshold = 0.5f;
+const float DynamicBody::sleepThreshold = 50.0f;
 
 void DynamicBody::Update(const float deltaTime)
 {
@@ -33,26 +33,12 @@ void DynamicBody::SetPositionX(float x)
     bounds.x = x;
 }
 
-void DynamicBody::TryToSleep()
-{
-    if (std::abs(velocity.x) < sleepThreshold && std::abs(velocity.y) < sleepThreshold)
-    {
-        velocity.x = 0.0f;
-        velocity.y = 0.0f;
-        isAsleep = true;
-    }
-    else
-    {
-        isAsleep = false;
-    }
-}
-
 DynamicBody::DynamicBody(const Rectangle& rect)
     : RigidBody{rect}, velocity({0.0f, 0.0f}),
-    restitution{defaultRestitution}, isAsleep{false}
+    restitution{defaultRestitution}
     {}
 
-DynamicBody::DynamicBody(const Rectangle& rect, const Color& color, const float restitution)
-    : RigidBody(rect, color), velocity({0.0f, 0.0f}),
-    restitution{restitution}, isAsleep{false}
+DynamicBody::DynamicBody(const Rectangle& rect, const Color& color, const float friction, const float restitution)
+    : RigidBody(rect, color, friction), velocity({0.0f, 0.0f}),
+    restitution{restitution}
     {}

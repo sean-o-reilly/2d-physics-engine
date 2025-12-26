@@ -60,8 +60,15 @@ StaticBody Serializer::StaticBodyFromJson(const nlohmann::json& json)
     {
         color = StaticBody::defaultColor;
     }
-    
-    return StaticBody(rect, color);
+
+    float friction = RigidBody::defaultFriction;
+
+    if (json.contains("friction"))
+    {
+        friction = json.at("friction").get<float>();
+    }
+
+    return StaticBody(rect, color, friction);
 }
 
 DynamicBody Serializer::DynamicBodyFromJson(const nlohmann::json& json)
@@ -94,7 +101,14 @@ DynamicBody Serializer::DynamicBodyFromJson(const nlohmann::json& json)
         restitution = json["restitution"];
     }
 
-    DynamicBody body(rect, color, restitution);
+    float friction = RigidBody::defaultFriction;
+
+    if (json.contains("friction"))
+    {
+        friction = json.at("friction").get<float>();
+    }
+
+    DynamicBody body(rect, color, friction, restitution);
 
     if (json.contains("velocity"))
     {

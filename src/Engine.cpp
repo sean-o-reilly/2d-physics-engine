@@ -61,7 +61,7 @@ void Engine::Run()
     
             if (benchmarkEnabled)
             {
-                UpdateTimed(accumulator, benchmarkLog, timeoutMs);
+                UpdateBenchmarked(accumulator, benchmarkLog, timeoutMs);
                 ++frameCount;
                 if (frameCount >= maxFrames) // Stop benchmarking after maxFrames
                 {
@@ -99,7 +99,7 @@ void Engine::Update(float& accumulator)
     EndDrawing();
 }
 
-void Engine::UpdateTimed(float& accumulator, std::ofstream& benchmarkLog, float timeoutThreshold)
+void Engine::UpdateBenchmarked(float& accumulator, std::ofstream& benchmarkLog, float timeoutThreshold)
 {
     const std::chrono::high_resolution_clock::time_point start = std::chrono::high_resolution_clock::now();
     Update(accumulator);

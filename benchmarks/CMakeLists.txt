@@ -1,5 +1,7 @@
 # Configure google benchmark executables
 
+message(STATUS "Building for benchmarking executables...")
+
 find_package(benchmark CONFIG REQUIRED)
 find_package(raylib CONFIG REQUIRED)
 

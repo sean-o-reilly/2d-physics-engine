@@ -13,7 +13,7 @@ public:
 private:
     void Update(float& accumulator);
 
-    void UpdateTimed(float& accumulator, std::ofstream& benchmarkLog, float timeoutThreshold);
+    void UpdateBenchmarked(float& accumulator, std::ofstream& benchmarkLog, float timeoutThreshold);
 
     Environment env;
     

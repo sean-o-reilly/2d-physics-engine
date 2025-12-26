@@ -1,112 +1,188 @@
 #include "Solver.h"
 
 #include <vector>
+#include <algorithm>
 #include "DynamicBody.h"
 #include "StaticBody.h"
 
-#include <fstream>
-#include <filesystem>
-#include <algorithm>
-
 namespace Solver
 {
-    void CollisionBruteForce(Environment* environment)
+    namespace 
     {
-        auto AABB = [](const Rectangle& a, const Rectangle& b)
+        bool AABB(const Rectangle& a, const Rectangle& b)
         {
             return a.x < b.x + b.width &&
                 a.x + a.width > b.x &&
                 a.y < b.y + b.height &&
                 a.y + a.height > b.y;
-        };
-
-        auto getMinOverlap = [](const Rectangle& a, const Rectangle& b) -> std::pair<float, float>
+        }
+        
+        std::pair<float, float> getMinOverlap(const Rectangle& a, const Rectangle& b)
         {
-            float overlapLeft   = (a.x + a.width) - b.x; // the amount that A's right side cuts into B's left
-            float overlapRight  = (b.x + b.width) - a.x; // the amount that A's bottom cuts into B's top
-            float overlapTop    = (a.y + a.height) - b.y; // the amount that B's right cuts into A's left
-            float overlapBottom = (b.y + b.height) - a.y; // the amount that B's bottom cuts into A's top
-
+            float overlapLeft   = (a.x + a.width) - b.x;
+            float overlapRight  = (b.x + b.width) - a.x;
+            float overlapTop    = (a.y + a.height) - b.y;
+            float overlapBottom = (b.y + b.height) - a.y;
+    
             float minX = (overlapLeft < overlapRight) ? overlapLeft : -overlapRight;
             float minY = (overlapTop < overlapBottom) ? overlapTop : -overlapBottom;
-
+    
             return {minX, minY};
-        };
+        }
         
+        float GetFrictionCoefficientMultiplier(const float a, const float b)
+        {
+            static constexpr float frictionWeight = 10.0f;
+            return ((a + b) / 2.0f) * frictionWeight;
+        }
+    }
+
+    void CollisionPrecompute(Environment* environment)
+    {
+        static constexpr float frictionClamp = 0.05f;
+
         std::vector<DynamicBody>& dynamicBodies = environment->GetDynamicBodies();
         std::vector<StaticBody>& staticBodies = environment->GetStaticBodies();
+
+        const size_t numDynamic = dynamicBodies.size();
+        const size_t numStatic = staticBodies.size();
+
+        // Pre-compute all data once, static vectors to avoid heap allocations per frame
+        static std::vector<Rectangle> dynBounds;
+        static std::vector<float> dynFriction;
+        static std::vector<float> dynRestitution;
         
-        // Dynamic vs Dynamic
-        for (size_t i = 0; i < dynamicBodies.size(); ++i)
+        dynBounds.resize(numDynamic);
+        dynFriction.resize(numDynamic);
+        dynRestitution.resize(numDynamic);
+        
+        for (size_t i = 0; i < numDynamic; ++i)
         {
-            for (size_t j = i + 1; j < dynamicBodies.size(); ++j)
-            {   
-                Rectangle a = dynamicBodies[i].GetBounds();
-                Rectangle b = dynamicBodies[j].GetBounds();
-                
-                if (AABB(a, b))
+            dynBounds[i] = dynamicBodies[i].GetBounds();
+            dynFriction[i] = dynamicBodies[i].GetFriction();
+            dynRestitution[i] = dynamicBodies[i].restitution;
+        }
+        
+        static std::vector<Rectangle> statBounds;
+        static std::vector<float> statFriction;
+        statBounds.resize(numStatic);
+        statFriction.resize(numStatic);
+
+        for (size_t i = 0; i < numStatic; ++i)
+        {
+            statBounds[i] = staticBodies[i].GetBounds();
+            statFriction[i] = staticBodies[i].GetFriction();
+        }
+
+        // Dynamic vs Dynamic
+        for (size_t i = 0; i < numDynamic; ++i)
+        {
+            for (size_t j = i + 1; j < numDynamic; ++j)
+            {
+                const Rectangle& aBounds = dynBounds[i];
+                const Rectangle& bBounds = dynBounds[j];
+
+                if (AABB(aBounds, bBounds))
                 {
-                    auto [minX, minY] = getMinOverlap(a, b);
-                    
-                    if (std::abs(minX) < std::abs(minY)) // resolve along X axis
+                    DynamicBody& a = dynamicBodies[i];
+                    DynamicBody& b = dynamicBodies[j];
+
+                    auto [minX, minY] = getMinOverlap(aBounds, bBounds);
+
+                    const float frictionMultiplier = GetFrictionCoefficientMultiplier(dynFriction[i], dynFriction[j]);
+
+                    if (std::abs(minX) < std::abs(minY))
                     {
-                        // Move each half the overlap
-                        dynamicBodies[i].SetPositionX(a.x - minX / 2.0f);
-                        dynamicBodies[j].SetPositionX(b.x + minX / 2.0f);
-                        
-                        // Apply impulse-based collision with restitution
-                        float systemRestitution = std::min(dynamicBodies[i].restitution, dynamicBodies[j].restitution);
-                        float relativeVelocity = dynamicBodies[j].velocity.x - dynamicBodies[i].velocity.x;
+                        a.SetPositionX(aBounds.x - minX / 2.0f);
+                        b.SetPositionX(bBounds.x + minX / 2.0f);
+
+                        float relativeTangentVel = b.velocity.y - a.velocity.y;
+                        float frictionImpulse = relativeTangentVel * frictionMultiplier;
+
+                        float maxFriction = std::abs(relativeTangentVel) * frictionClamp;
+                        frictionImpulse = std::clamp(frictionImpulse, -maxFriction, maxFriction);
+
+                        float systemRestitution = std::min(dynRestitution[i], dynRestitution[j]);
+                        float relativeVelocity = b.velocity.x - a.velocity.x;
                         float impulse = (1.0f + systemRestitution) * relativeVelocity / 2.0f;
-                        
-                        dynamicBodies[i].velocity.x += impulse;
-                        dynamicBodies[j].velocity.x -= impulse;                        
+
+                        a.velocity.x += impulse;
+                        b.velocity.x -= impulse;
+
+                        a.velocity.y += frictionImpulse / 2.0f;
+                        b.velocity.y -= frictionImpulse / 2.0f;
                     }
-                    else // resolve along Y axis
+                    else
                     {
-                        dynamicBodies[j].SetPositionY(b.y + minY / 2.0f);
-                        dynamicBodies[i].SetPositionY(a.y - minY / 2.0f);
-                        
-                        // Swap velocities and apply restitution to relative velocity
-                        float relativeVelocity = dynamicBodies[j].velocity.y - dynamicBodies[i].velocity.y;
-                        float systemRestitution = std::min(dynamicBodies[i].restitution, dynamicBodies[j].restitution);
-                        std::swap(dynamicBodies[i].velocity.y, dynamicBodies[j].velocity.y);
-                        
-                        dynamicBodies[i].velocity.y -= relativeVelocity * (1.0f - systemRestitution);
-                        dynamicBodies[j].velocity.y += relativeVelocity * (1.0f - systemRestitution);                        
+                        a.SetPositionY(aBounds.y - minY / 2.0f);
+                        b.SetPositionY(bBounds.y + minY / 2.0f);
+
+                        float relativeTangentVel = b.velocity.x - a.velocity.x;
+                        float frictionImpulse = relativeTangentVel * frictionMultiplier;
+
+                        float maxFriction = std::abs(relativeTangentVel) * frictionClamp;
+                        frictionImpulse = std::clamp(frictionImpulse, -maxFriction, maxFriction);
+
+                        float relativeVelocity = b.velocity.y - a.velocity.y;
+                        float systemRestitution = std::min(dynRestitution[i], dynRestitution[j]);
+                        std::swap(a.velocity.y, b.velocity.y);
+
+                        a.velocity.y -= relativeVelocity * (1.0f - systemRestitution);
+                        b.velocity.y += relativeVelocity * (1.0f - systemRestitution);
+
+                        a.velocity.x += frictionImpulse / 2.0f;
+                        b.velocity.x -= frictionImpulse / 2.0f;
                     }
-                    
-                    dynamicBodies[i].TryToSleep();
-                    dynamicBodies[j].TryToSleep();
+
+                    // Sync precomputed data
+                    dynBounds[i] = a.GetBounds();
+                    dynBounds[j] = b.GetBounds();
                 }
             }
         }
-        
+
         // Dynamic vs Static
-        for (auto& dyn : dynamicBodies)
+        for (size_t i = 0; i < numDynamic; ++i)
         {
-            for (auto& stat : staticBodies)
+            for (size_t j = 0; j < numStatic; ++j)
             {
-                Rectangle a = dyn.GetBounds();
-                Rectangle b = stat.GetBounds();
+                const Rectangle& dBounds = dynBounds[i];
+                const Rectangle& sBounds = statBounds[j];
 
-                if (AABB(a, b))
+                if (AABB(dBounds, sBounds))
                 {
-                    auto [minX, minY] = getMinOverlap(a, b);
+                    DynamicBody& dyn = dynamicBodies[i];
 
-                    // Resolve along axis of least penetration
+                    const float frictionMultiplier = GetFrictionCoefficientMultiplier(dynFriction[i], statFriction[j]);
+
+                    auto [minX, minY] = getMinOverlap(dBounds, sBounds);
+
                     if (std::abs(minX) < std::abs(minY))
                     {
-                        dyn.SetPositionX(a.x - minX);
-                        dyn.velocity.x = -dyn.velocity.x * dyn.restitution;
-                    } 
+                        dyn.SetPositionX(dBounds.x - minX);
+
+                        float tangentVel = dyn.velocity.y;
+                        float frictionImpulse = tangentVel * frictionMultiplier;
+
+                        float maxFriction = std::abs(tangentVel) * frictionClamp;
+                        frictionImpulse = std::clamp(frictionImpulse, -maxFriction, maxFriction);
+
+                        dyn.velocity.x = -dyn.velocity.x * dynRestitution[i];
+                        dyn.velocity.y -= frictionImpulse;
+                    }
                     else
                     {
-                        dyn.SetPositionY(a.y - minY);
-                        dyn.velocity.y = -dyn.velocity.y * dyn.restitution;
-                    }
+                        dyn.SetPositionY(dBounds.y - minY);
 
-                    dyn.TryToSleep();
+                        float tangentVel = dyn.velocity.x;
+                        float frictionImpulse = tangentVel * frictionMultiplier;
+
+                        float maxFriction = std::abs(tangentVel) * frictionClamp;
+                        frictionImpulse = std::clamp(frictionImpulse, -maxFriction, maxFriction);
+
+                        dyn.velocity.y = -dyn.velocity.y * dynRestitution[i];
+                        dyn.velocity.x -= frictionImpulse;
+                    }
                 }
             }
         }

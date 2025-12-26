@@ -19,16 +19,13 @@ public:
 
     const float restitution;
 
-    void TryToSleep();
-
-    bool isAsleep;
 private:
     static const float sleepThreshold;
 
 public:
     DynamicBody(const Rectangle& rect);
     
-    DynamicBody(const Rectangle& rect, const Color& color, const float restitution);
+    DynamicBody(const Rectangle& rect, const Color& color, const float friction, const float restitution);
 
     static const Color defaultColor;
     static const float defaultRestitution;

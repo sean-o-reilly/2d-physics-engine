@@ -2,5 +2,5 @@
 
 namespace Solver
 {
-    void CollisionBruteForce(Environment* environment);
+    void CollisionPrecompute(Environment* environment);
 }
